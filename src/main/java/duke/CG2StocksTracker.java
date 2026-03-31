@@ -77,6 +77,9 @@ public class CG2StocksTracker {
         case VALUE:
             handleValue();
             return true;
+        case INSIGHTS:
+            handleInsights();
+            return true;
         case HELP:
             ui.showHelp();
             return true;
@@ -202,6 +205,11 @@ public class CG2StocksTracker {
     private void handleValue() throws AppException {
         Portfolio portfolio = portfolioBook.getActivePortfolio();
         ui.showPortfolioValue(portfolio);
+    }
+
+    private void handleInsights() throws AppException {
+        Portfolio portfolio = portfolioBook.getActivePortfolio();
+        ui.showInsightsTable(portfolio);
     }
 
     private void save() throws AppException {

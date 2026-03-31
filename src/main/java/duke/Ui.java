@@ -1,5 +1,6 @@
 package duke;
 import java.text.DecimalFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -240,6 +241,94 @@ public class Ui {
     }
 
     /**
+     * Prints per-holding performance insights in a text-only table format.
+     * This increment focuses on unrealized per-holding metrics and portfolio-level summary.
+     *
+     * @param portfolio portfolio to inspect.
+     */
+    public void showInsightsTable(Portfolio portfolio) {
+        assert portfolio != null : "portfolio must not be null";
+        System.out.println("Insights for portfolio: " + portfolio.getName());
+
+        List<Holding> holdings = portfolio.getHoldings().stream()
+                .sorted(Comparator.comparing(Holding::getTicker))
+                .toList();
+
+        if (holdings.isEmpty()) {
+            System.out.println("No holdings to analyze.");
+            return;
+        }
+
+        String header = String.format("%-3s %-5s  %-5s%8s %8s %8s %10s %8s",
+            "#", "TYPE", "TICKR", "QTY", "AVG", "LAST", "U_PNL", "U%");
+        System.out.println(header);
+        System.out.println("---------------------------------------------------------------");
+
+        double totalCostBasis = 0.0;
+        double totalUnrealized = 0.0;
+        int pricedCount = 0;
+
+        Holding bestHolding = null;
+        Holding worstHolding = null;
+
+        for (int i = 0; i < holdings.size(); i++) {
+            Holding holding = holdings.get(i);
+            double quantity = holding.getQuantity();
+            double avg = holding.getAverageBuyPrice();
+            double costBasis = quantity * avg;
+            totalCostBasis += costBasis;
+
+            String lastText = holding.hasPrice() ? formatMoney(holding.getLastPrice()) : "-";
+            double unrealized = holding.hasPrice() ? holding.getUnrealizedPnl() : 0.0;
+            String unrealizedText = formatSignedMoney(unrealized);
+            String unrealizedPctText = holding.hasPrice() && costBasis > 0
+                    ? formatSignedPercent(unrealized / costBasis)
+                    : "n/a";
+
+            if (holding.hasPrice()) {
+                pricedCount++;
+                totalUnrealized += unrealized;
+
+                if (bestHolding == null || unrealized > bestHolding.getUnrealizedPnl()) {
+                    bestHolding = holding;
+                }
+                if (worstHolding == null || unrealized < worstHolding.getUnrealizedPnl()) {
+                    worstHolding = holding;
+                }
+            }
+
+                System.out.println(String.format("%-3d %-5s  %-5s%8s %8s %8s %10s %8s",
+                    i + 1,
+                    holding.getAssetType().name(),
+                    toMaxTickerWidth(holding.getTicker()),
+                    formatNumber(quantity),
+                    formatMoney(avg),
+                    lastText,
+                    unrealizedText,
+                    unrealizedPctText));
+        }
+
+        int unpricedCount = holdings.size() - pricedCount;
+        System.out.println("---------------------------------------------------------------");
+        System.out.println("Summary:");
+        System.out.println("- Holdings: " + holdings.size() + " (priced: " + pricedCount + ", unpriced: " + unpricedCount + ")");
+        System.out.println("- Open cost basis: " + formatMoney(totalCostBasis));
+        System.out.println("- Unrealized P&L: " + formatSignedMoney(totalUnrealized)
+                + " (" + formatSignedPercent(safeRatio(totalUnrealized, totalCostBasis)) + ")");
+        System.out.println("- Realized P&L (portfolio): " + formatSignedMoney(portfolio.getTotalRealizedPnl()));
+        System.out.println("- Net P&L: " + formatSignedMoney(portfolio.getTotalRealizedPnl() + totalUnrealized));
+
+        if (bestHolding != null) {
+            System.out.println("- Top contributor: " + bestHolding.getTicker()
+                    + " " + formatSignedMoney(bestHolding.getUnrealizedPnl()));
+        }
+        if (worstHolding != null) {
+            System.out.println("- Top detractor: " + worstHolding.getTicker()
+                    + " " + formatSignedMoney(worstHolding.getUnrealizedPnl()));
+        }
+    }
+
+    /**
      * Prints the outcome of a bulk price-update operation.
      *
      * @param result bulk update summary and row-level failures.
@@ -286,5 +375,30 @@ public class Ui {
     public static String formatSignedMoney(double value) {
         String abs = formatMoney(Math.abs(value));
         return (value >= 0 ? "+" : "-") + abs;
+    }
+
+    /**
+     * Formats a decimal ratio as signed percent (e.g. 0.123 -> +12.30%).
+     *
+     * @param ratio decimal ratio value.
+     * @return string representing signed percent value.
+     */
+    public static String formatSignedPercent(double ratio) {
+        String abs = formatMoney(Math.abs(ratio * 100));
+        return (ratio >= 0 ? "+" : "-") + abs + "%";
+    }
+
+    private static double safeRatio(double numerator, double denominator) {
+        if (denominator == 0) {
+            return 0;
+        }
+        return numerator / denominator;
+    }
+
+    private static String toMaxTickerWidth(String ticker) {
+        if (ticker == null) {
+            return "";
+        }
+        return ticker.length() <= 5 ? ticker : ticker.substring(0, 5);
     }
 }
