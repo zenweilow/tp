@@ -247,19 +247,48 @@ public class Ui {
      * @param portfolio portfolio to inspect.
      */
     public void showInsightsTable(Portfolio portfolio) {
+        showInsightsTable(portfolio, null, null);
+    }
+
+    /**
+     * Prints per-holding performance insights with optional type filter and top-N limit.
+     *
+     * @param portfolio portfolio to inspect.
+     * @param filterType optional asset-type filter; null means all holdings.
+     * @param topN optional max number of holdings to display; null means all.
+     */
+    public void showInsightsTable(Portfolio portfolio, AssetType filterType, Integer topN) {
         assert portfolio != null : "portfolio must not be null";
         System.out.println("Insights for portfolio: " + portfolio.getName());
 
         List<Holding> holdings = portfolio.getHoldings().stream()
-                .sorted(Comparator.comparing(Holding::getTicker))
+                .filter(holding -> filterType == null || holding.getAssetType() == filterType)
                 .toList();
+
+        if (topN != null) {
+            holdings = holdings.stream()
+                    .sorted(Comparator.comparingDouble((Holding h) -> Math.abs(h.getUnrealizedPnl())).reversed()
+                            .thenComparing(Holding::getTicker))
+                    .limit(topN)
+                    .toList();
+        } else {
+            holdings = holdings.stream()
+                    .sorted(Comparator.comparing(Holding::getTicker))
+                    .toList();
+        }
 
         if (holdings.isEmpty()) {
             System.out.println("No holdings to analyze.");
             return;
         }
 
-        String header = String.format("%-3s %-5s  %-5s%8s %8s %8s %10s %8s",
+        if (filterType != null || topN != null) {
+            String filterText = filterType == null ? "ALL" : filterType.name();
+            String topText = topN == null ? "ALL" : String.valueOf(topN);
+            System.out.println("View: type=" + filterText + ", top=" + topText);
+        }
+
+        String header = String.format("%-3s %-5s %-5s%8s %8s %8s %10s %8s",
             "#", "TYPE", "TICKR", "QTY", "AVG", "LAST", "U_PNL", "U%");
         System.out.println(header);
         System.out.println("---------------------------------------------------------------");
