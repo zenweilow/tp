@@ -2,6 +2,7 @@ User Guide
 
 Introduction
 CG2 Stocks Tracker is a command-line portfolio tracker for recording holdings, updating market prices, and viewing realized/unrealized P&L.
+Prices are entered manually via `/set` or `/setmany` (there is no automatic live market feed).
 
 Application data, including portfolios, holdings, average buy prices, latest saved prices, and realized P&L, is automatically saved and restored across restarts.
 
@@ -74,15 +75,15 @@ Format: /remove --type TYPE --ticker TICKER [--qty QTY] [--price PRICE]
 
 Optional behavior:
 - If `--qty` is omitted: sell all units of the holding.
-- If `--price` is omitted: use the last price set via `/set` for that ticker.
-- If both are omitted: sell all units using last `/set` price.
+- If `--price` is omitted: use the holding's saved price (from `/set` or the holding's stored price).
+- If both are omitted: sell all units using the holding's saved price.
 - Optional fee fields: `--brokerage FEE`, `--fx FEE`, `--platform FEE`.
 
 Notes:
-- If no `--price` is provided and there is no last `/set` price, command fails.
+- If no saved price exists, provide `--price`.
 - `QTY` (when provided) must be `> 0` and not exceed current holding quantity.
 - Fee values (when provided) must be `>= 0`.
-- If `/set` was never used for a holding, remove falls back to the initial add price for that holding.
+- If `/set` was never used for a holding, remove can still use the holding's stored price.
 
 Examples:
 - Sell specific qty at explicit price:
@@ -101,10 +102,6 @@ Output contains:
 - Effective sell price used.
 - Total fees used for that sale (when non-zero).
 - Realized P&L for that sale (signed + / -).
-
-Sold quantity.
-Effective sell price used.
-Realized P&L for that sale (signed + / -).
 
 Set market price: /set
 Sets the latest market price for a ticker. This does not sell anything.
@@ -130,6 +127,10 @@ Loads prices from CSV into active portfolio.
 Format: /setmany --file FILEPATH
 
 CSV header must be: ticker,price
+
+Notes:
+- Header matching is case-insensitive.
+- Invalid rows are reported as failed rows; valid rows are still processed.
 
 View valuation and P&L: /value
 Shows portfolio-level current total value, realized P&L, and unrealized P&L by holding.
@@ -160,6 +161,17 @@ Unrealized P&L is calculated using:
 
 All values remain consistent after restarting the application because the required storage fields are saved and restored.
 
+Insights view: /insights
+Shows per-holding insights (including optional filters and top gainers).
+
+Format: /insights [--type stock|etf|bond] [--top N] [--chart]
+
+Examples:
+- `/insights`
+- `/insights --type stock`
+- `/insights --top 5`
+- `/insights --type etf --top 3 --chart`
+
 Help: /help
 Shows the command list.
 
@@ -169,11 +181,11 @@ Exits the application.
 FAQ
 Q: Why does /remove fail when I omit --price?
 
-A: If you omit --price, the app first uses the last /set price for that ticker. If no /set price exists yet, it uses the holding's initial add price.
+A: If you omit --price, the app uses the holding's saved price. If no saved price is available, provide --price.
 
 Q: How is average buy price calculated?
 
-A: Weighted average cost basis is used: newAvg = (oldQty * oldAvg + addedQty * addedPrice) / (oldQty + addedQty)
+A: Weighted average cost basis is used. If fees are provided for `/add`, they are included in purchase cost before the new average is computed.
 
 Q: Will my data persist after I exit the app?
 
@@ -181,7 +193,7 @@ A: Yes. Portfolios, holdings, average buy prices, latest saved prices, and reali
 
 Q: What happens to older save files?
 
-If fees are provided for `/add`, they are included in the purchase cost before calculating the new average buy price.
+A: Older save files are supported. Legacy holding rows can still be loaded.
 
 ## Command Summary
 
@@ -197,5 +209,6 @@ If fees are provided for `/add`, they are included in the purchase cost before c
 - `/set --ticker TICKER --price PRICE`
 - `/setmany --file FILEPATH`
 - `/value`
+- `/insights [--type stock|etf|bond] [--top N] [--chart]`
 - `/help`
 - `/exit`
