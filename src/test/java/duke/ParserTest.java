@@ -108,6 +108,58 @@ public class ParserTest {
     }
 
     @Test
+    void parseSet_withRequiredOptions_parsesFields() throws AppException {
+        ParsedCommand command = parser.parse("/set --type etf --ticker qqq --price 450");
+
+        assertEquals(CommandType.SET, command.type());
+        assertEquals(AssetType.ETF, command.assetType());
+        assertEquals("QQQ", command.ticker());
+        assertEquals(450.0, command.price());
+    }
+
+    @Test
+    void parseSet_missingType_throws() {
+        assertThrows(AppException.class, () ->
+                parser.parse("/set --ticker VOO --price 600"));
+    }
+
+    @Test
+    void parseWatchList_parsesWatchListAction() throws AppException {
+        ParsedCommand command = parser.parse("/watch list");
+
+        assertEquals(CommandType.WATCH, command.type());
+        assertEquals("list", command.name());
+    }
+
+    @Test
+    void parseWatchAdd_withoutPrice_parsesNullPrice() throws AppException {
+        ParsedCommand command = parser.parse("/watch add --type stock --ticker voo");
+
+        assertEquals(CommandType.WATCH, command.type());
+        assertEquals("add", command.name());
+        assertEquals(AssetType.STOCK, command.assetType());
+        assertEquals("VOO", command.ticker());
+        assertNull(command.price());
+    }
+
+    @Test
+    void parseWatchBuy_withPortfolio_parsesFields() throws AppException {
+        ParsedCommand command = parser.parse("/watch buy --type etf --ticker qqq --portfolio retirement");
+
+        assertEquals(CommandType.WATCH, command.type());
+        assertEquals("buy", command.name());
+        assertEquals(AssetType.ETF, command.assetType());
+        assertEquals("QQQ", command.ticker());
+        assertEquals("retirement", command.listTarget());
+    }
+
+    @Test
+    void parseWatchBuy_missingPortfolio_throws() {
+        assertThrows(AppException.class, () ->
+                parser.parse("/watch buy --type etf --ticker qqq"));
+    }
+
+    @Test
     void parseList_withStockFilter_parsesListTarget() throws AppException {
         ParsedCommand command = parser.parse("/list --stock");
 

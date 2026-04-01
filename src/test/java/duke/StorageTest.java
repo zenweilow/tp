@@ -7,6 +7,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -127,5 +128,34 @@ public class StorageTest {
         assertThrows(AppException.class, () ->
                 storage.loadPriceUpdates(missing, portfolio)
         );
+    }
+
+    @Test
+    void saveWatchlist_thenLoadWatchlist_restoresEntries(@TempDir Path tempDir) throws AppException {
+        Path file = tempDir.resolve("data.txt");
+        Storage storage = new Storage(file.toString());
+
+        Watchlist watchlist = new Watchlist();
+        watchlist.addItem(AssetType.STOCK, "AAPL", 220.0);
+        watchlist.addItem(AssetType.ETF, "QQQ", null);
+
+        storage.saveWatchlist(watchlist);
+        Watchlist loaded = storage.loadWatchlist();
+
+        assertTrue(loaded.hasItem(AssetType.STOCK, "AAPL"));
+        assertTrue(loaded.hasItem(AssetType.ETF, "QQQ"));
+        assertEquals(220.0, loaded.getItem(AssetType.STOCK, "AAPL").targetPrice());
+        assertNull(loaded.getItem(AssetType.ETF, "QQQ").targetPrice());
+    }
+
+    @Test
+    void loadWatchlist_corruptedFile_throwsException(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve("data.txt");
+        Storage storage = new Storage(file.toString());
+
+        Path watchlistFile = tempDir.resolve("data.txt.watchlist");
+        Files.write(watchlistFile, List.of("WATCH|STOCK|AAPL|-10"));
+
+        assertThrows(AppException.class, storage::loadWatchlist);
     }
 }

@@ -36,6 +36,11 @@ public class UiTest {
         assertTrue(output.contains("/create NAME"));
         assertTrue(output.contains("/list --stock"));
         assertTrue(output.contains("/list --portfolios"));
+        assertTrue(output.contains("/watch add --type TYPE --ticker TICKER [--price PRICE]"));
+        assertTrue(output.contains("/watch remove --type TYPE --ticker TICKER"));
+        assertTrue(output.contains("/watch list"));
+        assertTrue(output.contains("/watch buy --type TYPE --ticker TICKER --portfolio NAME"));
+        assertTrue(output.contains("/set --type TYPE --ticker TICKER --price PRICE"));
         assertTrue(output.contains("/setmany --file FILEPATH"));
         assertTrue(output.contains("/insights [--type stock|etf|bond] [--top N] [--chart]"));
         assertTrue(output.contains("/exit"));
@@ -130,6 +135,22 @@ public class UiTest {
         assertTrue(output.contains("Updated prices: 1 succeeded, 2 failed"));
         assertTrue(output.contains("Failed rows:"));
         assertTrue(output.contains("line 2 - ticker: AAPL reason: price must be > 0"));
+    }
+
+    @Test
+    void showWatchlist_printsItemsAndTotals() {
+        Ui ui = new Ui();
+        Watchlist watchlist = new Watchlist();
+        watchlist.addItem(AssetType.STOCK, "VOO", 600.0);
+        watchlist.addItem(AssetType.ETF, "QQQ", null);
+
+        ui.showWatchlist(watchlist);
+
+        String output = capturedOut.toString();
+        assertTrue(output.contains("Watchlist:"));
+        assertTrue(output.contains("1 STOCK VOO 600.00"));
+        assertTrue(output.contains("2 ETF QQQ -"));
+        assertTrue(output.contains("Total watchlist items: 2"));
     }
 
     @Test
