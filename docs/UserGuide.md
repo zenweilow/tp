@@ -17,8 +17,19 @@ CG2StocksTracker is designed to give a clear, accurate view of your holdings wit
 ## Quick Start
 
 1. Ensure Java 17 or above is installed.
-2. Open a terminal in the project root.
-3. Run the app:
+2. Download the latest `.jar` file from the project's Releases page.
+3. Create an empty folder and place the downloaded `.jar` file inside it.
+4. Open a terminal in that folder.
+5. Run the app with:
+
+```bash
+java -jar <release-name>.jar
+```
+
+6. Type commands and press Enter.
+7. Use `/help` to view available commands.
+
+If you are running the project from source instead of the release `.jar`, open a terminal in the project root and use:
 
 ```bash
 # Windows
@@ -27,9 +38,6 @@ gradlew.bat run
 # macOS/Linux
 ./gradlew run
 ```
-
-4. Type commands and press Enter.
-5. Use `/help` to view available commands.
 
 ## Command Format
 
