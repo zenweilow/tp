@@ -264,4 +264,18 @@ public class ParserTest {
         assertThrows(AppException.class, () ->
                 parser.parse("/add --type stock --ticker VOO --qty 1 --price 100 --brokerage Infinity"));
     }
+
+    @Test
+    void parseAdd_withMissingTickerValue_reportsTickerOption() {
+        AppException ex = assertThrows(AppException.class, () ->
+                parser.parse("/add --type 1 --ticker --qty 3"));
+        assertEquals("Missing value for option: --ticker", ex.getMessage());
+    }
+
+    @Test
+    void parseAdd_withMissingTypeValue_reportsTypeOption() {
+        AppException ex = assertThrows(AppException.class, () ->
+                parser.parse("/add --type --ticker AAPL --qty 3"));
+        assertEquals("Missing value for option: --type", ex.getMessage());
+    }
 }

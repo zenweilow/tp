@@ -218,24 +218,25 @@ public class Parser {
     private Map<String, String> parseOptions(List<String> tokens, int startIndex) throws AppException {
         Map<String, String> options = new HashMap<>();
 
-        for (int i = startIndex; i < tokens.size(); i += 2) {
-            if (i + 1 >= tokens.size()) {
-                throw new AppException("Missing value for option: " + tokens.get(i));
-            }
+        for (int i = startIndex; i < tokens.size();) {
             String key = tokens.get(i);
-            String value = tokens.get(i + 1);
-            //@@author zenweilow
             if (!key.startsWith("--")) {
                 throw new AppException("Invalid option: " + key);
             }
+            if (i + 1 >= tokens.size()) {
+                throw new AppException("Missing value for option: " + key);
+            }
+
+            String value = tokens.get(i + 1);
             if (value.startsWith("--") || value.isBlank()) {
                 throw new AppException("Missing value for option: " + key);
             }
-            if (options.containsKey(key.toLowerCase())) {
-                throw new AppException("Duplicate option: " + key.toLowerCase());
+            String normalisedKey = key.toLowerCase();
+            if (options.containsKey(normalisedKey)) {
+                throw new AppException("Duplicate option: " + normalisedKey);
             }
-            //@@author RishabhShenoy03
-            options.put(key.toLowerCase(), value);
+            options.put(normalisedKey, value);
+            i += 2;
         }
 
         return options;
