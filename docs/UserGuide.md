@@ -266,18 +266,31 @@ Format:
 
 CSV requirements:
 
-- Header must be `ticker,price` (case-insensitive compare after lowercasing).
-- Each data row must have exactly 2 columns.
-- `price` must be a positive number.
+- Header must be exactly `ticker,price` on the first line.
+- Each non-blank data row must have exactly 2 columns: ticker, then price.
+- Blank lines are ignored.
+- `ticker` must not be blank. Tickers are matched case-insensitively.
+- `price` must be a positive number greater than `0`.
 
 Behavior:
 
 - Valid rows are processed even if some rows fail.
 - Output shows success count, failure count, and row-level failure reasons.
+- A row fails if the ticker does not exist in the active portfolio.
 
 Example:
 
-- `/setmany --file text-ui-test/prices.csv`
+`prices.csv`
+
+```csv
+ticker,price
+AAPL,210.50
+QQQ,525.00
+```
+
+Command:
+
+- `/setmany --file prices.csv`
 
 ### View portfolio value and P&L: `/value`
 
