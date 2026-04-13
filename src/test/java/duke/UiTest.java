@@ -73,8 +73,8 @@ public class UiTest {
 
         String output = capturedOut.toString();
         assertTrue(output.contains("Portfolio: main"));
-        assertTrue(output.contains("1 STOCK AAPL 2 100.00 200.00"));
-        assertTrue(output.contains("2 ETF QQQ 3 350.00 1050.00"));
+        assertTrue(output.contains("1 TYPE: STOCK TICKER: AAPL QTY: 2 PRICE: 100.00 VALUE: 200.00"));
+        assertTrue(output.contains("2 TYPE: ETF TICKER: QQQ QTY: 3 PRICE: 350.00 VALUE: 1050.00"));
         assertTrue(output.contains("Total holdings: 2"));
         assertTrue(output.contains("Total value: 1250.00"));
     }
@@ -90,7 +90,7 @@ public class UiTest {
 
         String output = capturedOut.toString();
         assertTrue(output.contains("Portfolio: main"));
-        assertTrue(output.contains("1 STOCK AAPL"));
+        assertTrue(output.contains("1 TYPE: STOCK TICKER: AAPL QTY: 2 PRICE: 90.00 VALUE: 180.00"));
         assertTrue(output.contains("Total holdings: 1"));
         assertTrue(output.contains("Total value: 180.00"));
     }

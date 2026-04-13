@@ -229,14 +229,15 @@ public class Ui {
             String valueText = holding.hasPrice() ? formatMoney(holding.getValue()) : "-";
 
             System.out.println(index + " "
+                    + "TYPE: "
                     + holding.getAssetType().name()
-                    + " "
+                    + " TICKER: "
                     + holding.getTicker()
-                    + " "
+                    + " QTY: "
                     + formatNumber(holding.getQuantity())
-                    + " "
+                    + " PRICE: "
                     + priceText
-                    + " "
+                    + " VALUE: "
                     + valueText);
 
             if (holding.hasPrice()) {
