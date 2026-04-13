@@ -1,10 +1,21 @@
 @startuml
 title Use Command Class View
 
-class Parser
-class CG2StocksTracker
-class PortfolioBook
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class PortfolioBook {
+  + usePortfolio(name: String)
+}
+
+class Ui {
+  + showMessage(message: String)
+}
 
 CG2StocksTracker --> PortfolioBook : usePortfolio(name)
 CG2StocksTracker --> Ui : show active

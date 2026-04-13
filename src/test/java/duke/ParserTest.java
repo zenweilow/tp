@@ -148,19 +148,20 @@ public class ParserTest {
 
     @Test
     void parseWatchBuy_withPortfolio_parsesFields() throws AppException {
-        ParsedCommand command = parser.parse("/watch buy --type etf --ticker qqq --portfolio retirement");
+        ParsedCommand command = parser.parse("/watch buy --type etf --ticker qqq --qty 3 --portfolio retirement");
 
         assertEquals(CommandType.WATCH, command.type());
         assertEquals("buy", command.name());
         assertEquals(AssetType.ETF, command.assetType());
         assertEquals("QQQ", command.ticker());
+        assertEquals(3.0, command.quantity());
         assertEquals("retirement", command.listTarget());
     }
 
     @Test
-    void parseWatchBuy_missingPortfolio_throws() {
+    void parseWatchBuy_missingQty_throws() {
         assertThrows(AppException.class, () ->
-                parser.parse("/watch buy --type etf --ticker qqq"));
+                parser.parse("/watch buy --type etf --ticker qqq --portfolio retirement"));
     }
 
     @Test

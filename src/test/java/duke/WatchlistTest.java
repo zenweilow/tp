@@ -52,17 +52,17 @@ public class WatchlistTest {
         PortfolioBook portfolioBook = new PortfolioBook();
         portfolioBook.createPortfolio("growth");
 
-        Watchlist.BuyResult result = watchlist.buyItem(AssetType.STOCK, "VOO", "growth", portfolioBook);
+        Watchlist.BuyResult result = watchlist.buyItem(AssetType.STOCK, "VOO", 3.0, "growth", portfolioBook);
 
         Portfolio portfolio = portfolioBook.getPortfolio("growth");
         assertNotNull(portfolio);
         assertTrue(portfolio.hasHolding(AssetType.STOCK, "VOO"));
-        assertEquals(1.0, portfolio.getHolding(AssetType.STOCK, "VOO").getQuantity());
+        assertEquals(3.0, portfolio.getHolding(AssetType.STOCK, "VOO").getQuantity());
         assertEquals(600.0, portfolio.getHolding(AssetType.STOCK, "VOO").getAverageBuyPrice());
         assertFalse(watchlist.hasItem(AssetType.STOCK, "VOO"));
         assertEquals("growth", result.portfolioName());
-        assertEquals(1.0, result.boughtQuantity());
-        assertEquals(1.0, result.resultingQuantity());
+        assertEquals(3.0, result.boughtQuantity());
+        assertEquals(3.0, result.resultingQuantity());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class WatchlistTest {
         portfolioBook.createPortfolio("growth");
 
         assertThrows(IllegalArgumentException.class, () ->
-                watchlist.buyItem(AssetType.STOCK, "VOO", "growth", portfolioBook));
+                watchlist.buyItem(AssetType.STOCK, "VOO", 1.0, "growth", portfolioBook));
     }
 
     @Test
@@ -85,6 +85,6 @@ public class WatchlistTest {
         PortfolioBook portfolioBook = new PortfolioBook();
 
         assertThrows(IllegalArgumentException.class, () ->
-                watchlist.buyItem(AssetType.STOCK, "VOO", "missing", portfolioBook));
+                watchlist.buyItem(AssetType.STOCK, "VOO", 1.0, "missing", portfolioBook));
     }
 }

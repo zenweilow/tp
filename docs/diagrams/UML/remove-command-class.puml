@@ -1,13 +1,39 @@
 @startuml
 title Remove Command Class View
 
-class Parser
-class ParsedCommand
-class CG2StocksTracker
-class Portfolio
-class Holding
-class Storage
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class ParsedCommand {
+  + assetType(): AssetType
+  + ticker(): String
+  + quantity(): Double
+  + price(): Double
+  + totalFees(): double
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class Portfolio {
+  + removeHolding(...): RemoveResult
+}
+
+class Holding {
+  + getLastPrice(): Double
+  + removeQuantity(quantityToRemove: double, sellPrice: double, totalFees: double): double
+}
+
+class Storage {
+  + save(portfolioBook: PortfolioBook)
+  + saveWatchlist(watchlist: Watchlist)
+}
+
+class Ui {
+  + showMessage(message: String)
+}
 
 CG2StocksTracker --> ParsedCommand : totalFees()
 CG2StocksTracker --> Portfolio : removeHolding(...)

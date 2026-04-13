@@ -108,7 +108,7 @@ public class Ui {
                    /watch add --type TYPE --ticker TICKER [--price PRICE]
                    /watch remove --type TYPE --ticker TICKER
                    /watch list
-                   /watch buy --type TYPE --ticker TICKER --portfolio NAME
+                   /watch buy --type TYPE --ticker TICKER --qty QTY --portfolio NAME
                    /set --ticker TICKER --price PRICE [--type TYPE]
                    /setmany --file FILEPATH
                    /value
@@ -229,14 +229,15 @@ public class Ui {
             String valueText = holding.hasPrice() ? formatMoney(holding.getValue()) : "-";
 
             System.out.println(index + " "
+                    + "TYPE: "
                     + holding.getAssetType().name()
-                    + " "
+                    + " TICKER: "
                     + holding.getTicker()
-                    + " "
+                    + " QTY: "
                     + formatNumber(holding.getQuantity())
-                    + " "
+                    + " PRICE: "
                     + priceText
-                    + " "
+                    + " VALUE: "
                     + valueText);
 
             if (holding.hasPrice()) {
@@ -297,30 +298,26 @@ public class Ui {
         assert portfolio != null : "portfolio must not be null";
         System.out.println("Insights for portfolio: " + portfolio.getName());
 
-        List<Holding> holdings = portfolio.getHoldings().stream()
+        List<Holding> filteredHoldings = portfolio.getHoldings().stream()
                 .filter(holding -> filterType == null || holding.getAssetType() == filterType)
                 .toList();
 
+        if (filteredHoldings.isEmpty()) {
+            System.out.println("No holdings to analyze.");
+            return;
+        }
+
+        List<Holding> displayHoldings;
         if (topN != null) {
-            holdings = holdings.stream()
-                .filter(holding -> holding.hasPrice() && holding.getUnrealizedPnl() > 0)
-                .sorted(Comparator.comparingDouble(Holding::getUnrealizedPnl).reversed()
+            displayHoldings = filteredHoldings.stream()
+                    .sorted(Comparator.comparingDouble(Holding::getUnrealizedPnl).reversed()
                             .thenComparing(Holding::getTicker))
                     .limit(topN)
                     .toList();
         } else {
-            holdings = holdings.stream()
+            displayHoldings = filteredHoldings.stream()
                     .sorted(Comparator.comparing(Holding::getTicker))
                     .toList();
-        }
-
-        if (holdings.isEmpty()) {
-            if (topN != null) {
-                System.out.println("No gainers to analyze for this view.");
-            } else {
-                System.out.println("No holdings to analyze.");
-            }
-            return;
         }
 
         if (filterType != null || topN != null) {
@@ -341,12 +338,11 @@ public class Ui {
         Holding bestHolding = null;
         Holding worstHolding = null;
 
-        for (int i = 0; i < holdings.size(); i++) {
-            Holding holding = holdings.get(i);
+        for (int i = 0; i < displayHoldings.size(); i++) {
+            Holding holding = displayHoldings.get(i);
             double quantity = holding.getQuantity();
             double avg = holding.getAverageBuyPrice();
             double costBasis = quantity * avg;
-            totalCostBasis += costBasis;
 
             String lastText = holding.hasPrice() ? formatMoney(holding.getLastPrice()) : "-";
             double unrealized = holding.hasPrice() ? holding.getUnrealizedPnl() : 0.0;
@@ -354,18 +350,6 @@ public class Ui {
             String unrealizedPctText = holding.hasPrice() && costBasis > 0
                     ? formatSignedPercent(unrealized / costBasis)
                     : "n/a";
-
-            if (holding.hasPrice()) {
-                pricedCount++;
-                totalUnrealized += unrealized;
-
-                if (bestHolding == null || unrealized > bestHolding.getUnrealizedPnl()) {
-                    bestHolding = holding;
-                }
-                if (worstHolding == null || unrealized < worstHolding.getUnrealizedPnl()) {
-                    worstHolding = holding;
-                }
-            }
 
             System.out.println(String.format("%-3d %-5s  %-5s%8s %8s %8s %10s %8s",
                     i + 1,
@@ -378,14 +362,34 @@ public class Ui {
                     unrealizedPctText));
         }
 
-        if (showChart) {
-            printInsightsChart(holdings);
+        for (Holding holding : filteredHoldings) {
+            double quantity = holding.getQuantity();
+            double avg = holding.getAverageBuyPrice();
+            double costBasis = quantity * avg;
+            totalCostBasis += costBasis;
+
+            double unrealized = holding.hasPrice() ? holding.getUnrealizedPnl() : 0.0;
+            if (holding.hasPrice()) {
+                pricedCount++;
+                totalUnrealized += unrealized;
+
+                if (bestHolding == null || unrealized > bestHolding.getUnrealizedPnl()) {
+                    bestHolding = holding;
+                }
+                if (worstHolding == null || unrealized < worstHolding.getUnrealizedPnl()) {
+                    worstHolding = holding;
+                }
+            }
         }
 
-        int unpricedCount = holdings.size() - pricedCount;
+        if (showChart) {
+            printInsightsChart(displayHoldings);
+        }
+
+        int unpricedCount = filteredHoldings.size() - pricedCount;
         System.out.println("---------------------------------------------------------------");
         System.out.println("Summary:");
-        System.out.println("- Holdings: " + holdings.size()
+        System.out.println("- Holdings: " + filteredHoldings.size()
                 + " (priced: " + pricedCount + ", unpriced: " + unpricedCount + ")");
         System.out.println("- Open cost basis: " + formatMoney(totalCostBasis));
         System.out.println("- Unrealized P&L: " + formatSignedMoney(totalUnrealized)

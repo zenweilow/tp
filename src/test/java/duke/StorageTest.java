@@ -131,6 +131,48 @@ public class StorageTest {
     }
 
     @Test
+    void quarantineCorruptedStorageFile_preservesBadContentsAndResetsPrimaryFile(@TempDir Path tempDir)
+            throws Exception {
+        Path file = tempDir.resolve("data.txt");
+        Storage storage = new Storage(file.toString());
+        List<String> corruptedContents = List.of(
+                "ACTIVE|main",
+                "broken line with no separators"
+        );
+        Files.write(file, corruptedContents);
+
+        Path quarantined = storage.quarantineCorruptedStorageFile();
+
+        assertTrue(Files.exists(quarantined));
+        assertEquals(corruptedContents, Files.readAllLines(quarantined));
+        assertTrue(Files.exists(file));
+        assertTrue(Files.readAllLines(file).isEmpty());
+    }
+
+    @Test
+    void save_afterQuarantine_doesNotOverwritePreservedCorruptedContents(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve("data.txt");
+        Storage storage = new Storage(file.toString());
+        List<String> corruptedContents = List.of(
+                "ACTIVE|main",
+                "PORTFOLIO|growth|abc"
+        );
+        Files.write(file, corruptedContents);
+
+        Path quarantined = storage.quarantineCorruptedStorageFile();
+
+        PortfolioBook book = new PortfolioBook();
+        book.createPortfolio("newport");
+        book.usePortfolio("newport");
+        storage.save(book);
+
+        assertEquals(corruptedContents, Files.readAllLines(quarantined));
+        List<String> savedLines = Files.readAllLines(file);
+        assertTrue(savedLines.contains("ACTIVE|newport"));
+        assertTrue(savedLines.contains("PORTFOLIO|newport|0.0"));
+    }
+
+    @Test
     void saveWatchlist_thenLoadWatchlist_restoresEntries(@TempDir Path tempDir) throws AppException {
         Path file = tempDir.resolve("data.txt");
         Storage storage = new Storage(file.toString());

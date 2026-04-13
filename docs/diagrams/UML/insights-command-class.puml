@@ -1,12 +1,32 @@
 @startuml
 title Insights Command Class View
 
-class Parser
-class CG2StocksTracker
-class PortfolioBook
-class Portfolio
-class Ui
-class InsightsOptions
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class PortfolioBook {
+  + getActivePortfolio(): Portfolio
+}
+
+class Portfolio {
+  + getHoldings(): List<Holding>
+  + getTotalUnrealizedPnl(): double
+}
+
+class Ui {
+  + showInsightsTable(portfolio: Portfolio, options: InsightsOptions)
+}
+
+class InsightsOptions {
+  + filterType: AssetType
+  + topN: Integer
+  + showChart: boolean
+}
 
 Parser --> CG2StocksTracker : raw options via ParsedCommand.listTarget
 CG2StocksTracker --> InsightsOptions : parseInsightsOptions(...)

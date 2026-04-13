@@ -38,7 +38,7 @@ public class UiTest {
         assertTrue(output.contains("/list --portfolios"));
         assertTrue(output.contains("/watch remove --type TYPE --ticker TICKER"));
         assertTrue(output.contains("/watch list"));
-        assertTrue(output.contains("/watch buy --type TYPE --ticker TICKER --portfolio NAME"));
+        assertTrue(output.contains("/watch buy --type TYPE --ticker TICKER --qty QTY --portfolio NAME"));
         assertTrue(output.contains("/set --ticker TICKER --price PRICE [--type TYPE]"));
         assertTrue(output.contains("/setmany --file FILEPATH"));
         assertTrue(output.contains("/insights [--type stock|etf|bond] [--top N] [--chart]"));
@@ -73,8 +73,8 @@ public class UiTest {
 
         String output = capturedOut.toString();
         assertTrue(output.contains("Portfolio: main"));
-        assertTrue(output.contains("1 STOCK AAPL 2 100.00 200.00"));
-        assertTrue(output.contains("2 ETF QQQ 3 350.00 1050.00"));
+        assertTrue(output.contains("1 TYPE: STOCK TICKER: AAPL QTY: 2 PRICE: 100.00 VALUE: 200.00"));
+        assertTrue(output.contains("2 TYPE: ETF TICKER: QQQ QTY: 3 PRICE: 350.00 VALUE: 1050.00"));
         assertTrue(output.contains("Total holdings: 2"));
         assertTrue(output.contains("Total value: 1250.00"));
     }
@@ -90,7 +90,7 @@ public class UiTest {
 
         String output = capturedOut.toString();
         assertTrue(output.contains("Portfolio: main"));
-        assertTrue(output.contains("1 STOCK AAPL"));
+        assertTrue(output.contains("1 TYPE: STOCK TICKER: AAPL QTY: 2 PRICE: 90.00 VALUE: 180.00"));
         assertTrue(output.contains("Total holdings: 1"));
         assertTrue(output.contains("Total value: 180.00"));
     }
@@ -174,6 +174,36 @@ public class UiTest {
         assertTrue(output.contains(
             "MSFT: Quantity 1, Avg. Price = 250.00, Last Price = 300.00, Unrealised P&L = +50.00"));
         assertTrue(output.contains("Total unrealised P&L: +50.00"));
+    }
+
+    @Test
+    void showInsightsTable_withTopN_keepsLosersAndUsesFullSummary() {
+        Ui ui = new Ui();
+        Portfolio portfolio = new Portfolio("t1");
+        portfolio.addHolding(AssetType.STOCK, "AAA", 2, 100, 0);
+        portfolio.addHolding(AssetType.STOCK, "BBB", 1, 50, 0);
+        portfolio.addHolding(AssetType.ETF, "CCC", 5, 20, 0);
+        portfolio.addHolding(AssetType.BOND, "DDD", 3, 1000, 0);
+
+        portfolio.setPriceForHolding(AssetType.STOCK, "AAA", 150);
+        portfolio.setPriceForHolding(AssetType.STOCK, "BBB", 30);
+        portfolio.setPriceForHolding(AssetType.ETF, "CCC", 25);
+        portfolio.setPriceForHolding(AssetType.BOND, "DDD", 950);
+
+        ui.showInsightsTable(portfolio, null, 10, false);
+
+        String output = capturedOut.toString();
+        assertTrue(output.contains("View: type=ALL, top=10"));
+        assertTrue(output.contains("AAA"));
+        assertTrue(output.contains("BBB"));
+        assertTrue(output.contains("CCC"));
+        assertTrue(output.contains("DDD"));
+        assertTrue(output.contains("- Holdings: 4 (priced: 4, unpriced: 0)"));
+        assertTrue(output.contains("- Open cost basis: 3350.00"));
+        assertTrue(output.contains("- Unrealized P&L: -45.00 (-1.34%)"));
+        assertTrue(output.contains("- Net P&L: -45.00"));
+        assertTrue(output.contains("- Top contributor: AAA +100.00"));
+        assertTrue(output.contains("- Top detractor: DDD -150.00"));
     }
 
     @Test

@@ -79,18 +79,23 @@ public class Watchlist {
     }
 
     /**
-     * Buys one unit of a watchlist item into a specified portfolio.
+     * Buys a specified quantity of a watchlist item into a target portfolio.
      * The item must have a price and the target portfolio must exist.
      *
      * @param assetType asset type.
      * @param ticker ticker symbol.
+     * @param quantity quantity to buy.
      * @param portfolioName destination portfolio name.
      * @param portfolioBook source of portfolios.
      * @return summary of the buy operation.
      */
-    public BuyResult buyItem(AssetType assetType, String ticker, String portfolioName, PortfolioBook portfolioBook) {
+    public BuyResult buyItem(AssetType assetType, String ticker, double quantity,
+                             String portfolioName, PortfolioBook portfolioBook) {
         if (portfolioBook == null) {
             throw new IllegalArgumentException("portfolioBook must not be null");
+        }
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("quantity must be > 0");
         }
         if (portfolioName == null || portfolioName.isBlank()) {
             throw new IllegalArgumentException("portfolioName must not be null or blank");
@@ -114,11 +119,10 @@ public class Watchlist {
             throw new IllegalArgumentException("Portfolio not found: " + trimmedPortfolioName);
         }
 
-        double quantityBought = 1.0;
         double buyPrice = item.targetPrice();
-        double resultingQuantity = portfolio.addHolding(item.assetType(), item.ticker(), quantityBought, buyPrice, 0);
+        double resultingQuantity = portfolio.addHolding(item.assetType(), item.ticker(), quantity, buyPrice, 0);
         items.remove(key);
-        return new BuyResult(trimmedPortfolioName, item.assetType(), item.ticker(), quantityBought,
+        return new BuyResult(trimmedPortfolioName, item.assetType(), item.ticker(), quantity,
                 buyPrice, resultingQuantity);
     }
 

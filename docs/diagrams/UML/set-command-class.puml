@@ -2,12 +2,31 @@
 @startuml
 title Set Command Class View
 
-class Parser
-class CG2StocksTracker
-class PortfolioBook
-class Portfolio
-class Storage
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class PortfolioBook {
+  + getActivePortfolio(): Portfolio
+}
+
+class Portfolio {
+  + setPriceForHolding(assetType: AssetType, ticker: String, price: double): boolean
+  + setPriceForTicker(ticker: String, price: double): int
+}
+
+class Storage {
+  + save(portfolioBook: PortfolioBook)
+  + saveWatchlist(watchlist: Watchlist)
+}
+
+class Ui {
+  + showMessage(message: String)
+}
 
 CG2StocksTracker --> PortfolioBook : getActivePortfolio()
 CG2StocksTracker --> Portfolio : setPriceForHolding/setPriceForTicker

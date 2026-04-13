@@ -1,12 +1,30 @@
 @startuml
 title SetMany Command Class View
 
-class Parser
-class CG2StocksTracker
-class Storage
-class PortfolioBook
-class Portfolio
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class Storage {
+  + loadPriceUpdates(csvPath: Path, portfolio: Portfolio): BulkUpdateResult
+  + save(portfolioBook: PortfolioBook)
+}
+
+class PortfolioBook {
+  + getActivePortfolio(): Portfolio
+}
+
+class Portfolio {
+  + setPriceForTicker(ticker: String, price: double): int
+}
+
+class Ui {
+  + showMessage(message: String)
+}
 
 CG2StocksTracker --> PortfolioBook : getActivePortfolio()
 CG2StocksTracker --> Storage : loadPriceUpdates(file, portfolio)

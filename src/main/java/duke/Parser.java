@@ -177,11 +177,12 @@ public class Parser {
 
     private ParsedCommand parseWatchBuy(List<String> tokens) throws AppException {
         Map<String, String> options = parseOptions(tokens, 2);
-        validateAllowedOptions(options, "--type", "--ticker", "--portfolio");
+        validateAllowedOptions(options, "--type", "--ticker", "--portfolio", "--qty");
         AssetType type = parseAssetType(requireOption(options, "--type"));
         String ticker = normaliseTicker(requireOption(options, "--ticker"));
         String portfolioName = requireOption(options, "--portfolio");
-        return new ParsedCommand(CommandType.WATCH, "buy", type, ticker, null, null,
+        double quantity = parsePositiveDouble(requireOption(options, "--qty"), "Quantity must be > 0");
+        return new ParsedCommand(CommandType.WATCH, "buy", type, ticker, quantity, null,
                 null, null, null, portfolioName, null);
     }
 

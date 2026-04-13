@@ -2,12 +2,34 @@
 @startuml
 title Value Command Class View
 
-class Parser
-class CG2StocksTracker
-class PortfolioBook
-class Portfolio
-class Holding
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class PortfolioBook {
+  + getActivePortfolio(): Portfolio
+}
+
+class Portfolio {
+  + getCurrentTotalValue(): double
+  + getTotalRealizedPnl(): double
+  + getTotalUnrealizedPnl(): double
+  + getHoldings(): List<Holding>
+}
+
+class Holding {
+  + hasPrice(): boolean
+  + getValue(): double
+  + getUnrealizedPnl(): double
+}
+
+class Ui {
+  + showPortfolioValue(portfolio: Portfolio)
+}
 
 CG2StocksTracker --> PortfolioBook : getActivePortfolio()
 CG2StocksTracker --> Ui : showPortfolioValue(portfolio)

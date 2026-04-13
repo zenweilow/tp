@@ -1,16 +1,73 @@
 @startuml
 title Architecture Overview
 
-class Ui
-class CG2StocksTracker
-class Parser
-class ParsedCommand
-class PortfolioBook
-class Portfolio
-class Holding
-class Watchlist
-class WatchlistItem
-class Storage
+class Ui {
+  + readCommand(): String
+  + showHelp()
+  + showMessage(message: String)
+}
+
+class CG2StocksTracker {
+  - portfolioBook: PortfolioBook
+  - watchlist: Watchlist
+  + run()
+}
+
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class ParsedCommand {
+  + type(): CommandType
+  + ticker(): String
+  + totalFees(): double
+}
+
+class PortfolioBook {
+  - portfolios: Map<String, Portfolio>
+  - activePortfolioName: String
+  + createPortfolio(name: String)
+  + getActivePortfolio(): Portfolio
+  + usePortfolio(name: String)
+}
+
+class Portfolio {
+  - name: String
+  - totalRealizedPnl: double
+  + addHolding(...)
+  + removeHolding(...)
+  + setPriceForTicker(ticker: String, price: double): int
+}
+
+class Holding {
+  - ticker: String
+  - quantity: double
+  - averageBuyPrice: double
+  + addQuantity(...)
+  + removeQuantity(...)
+  + getUnrealizedPnl(): double
+}
+
+class Watchlist {
+  - items: Map<String, WatchlistItem>
+  + addItem(...)
+  + removeItem(...)
+  + buyItem(...)
+}
+
+class WatchlistItem {
+  + ticker(): String
+  + targetPrice(): Double
+  + hasPrice(): boolean
+}
+
+class Storage {
+  - filePath: Path
+  - watchlistFilePath: Path
+  + load(): PortfolioBook
+  + save(portfolioBook: PortfolioBook)
+  + loadPriceUpdates(csvPath: Path, portfolio: Portfolio)
+}
 
 Ui --> CG2StocksTracker
 CG2StocksTracker --> Parser

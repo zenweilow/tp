@@ -2,11 +2,30 @@
 @startuml
 title List Command Class View
 
-class Parser
-class CG2StocksTracker
-class PortfolioBook
-class Portfolio
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class PortfolioBook {
+  + hasActivePortfolio(): boolean
+  + getActivePortfolio(): Portfolio
+  + getPortfolios(): List<Portfolio>
+}
+
+class Portfolio {
+  + getHoldings(): List<Holding>
+  + getPricedTotalValue(): double
+}
+
+class Ui {
+  + showHoldings(portfolio: Portfolio)
+  + showPortfolios(portfolioBook: PortfolioBook)
+  + showPortfolioSummaries(portfolioBook: PortfolioBook)
+}
 
 CG2StocksTracker --> PortfolioBook
 CG2StocksTracker --> Portfolio

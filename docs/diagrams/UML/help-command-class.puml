@@ -1,9 +1,17 @@
 @startuml
 title Help Command Class View
 
-class Parser
-class CG2StocksTracker
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class Ui {
+  + showHelp()
+}
 
 CG2StocksTracker --> Ui : showHelp()
 @enduml

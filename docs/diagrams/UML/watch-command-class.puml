@@ -1,13 +1,38 @@
 @startuml
 title Watch Command Class View
 
-class Parser
-class CG2StocksTracker
-class Watchlist
-class PortfolioBook
-class Portfolio
-class Storage
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class Watchlist {
+  + addItem(assetType: AssetType, ticker: String, targetPrice: Double)
+  + removeItem(assetType: AssetType, ticker: String): boolean
+  + buyItem(...): BuyResult
+  + getItems(): List<WatchlistItem>
+}
+
+class PortfolioBook {
+  + getPortfolio(name: String): Portfolio
+}
+
+class Portfolio {
+  + addHolding(...): double
+}
+
+class Storage {
+  + save(portfolioBook: PortfolioBook)
+  + saveWatchlist(watchlist: Watchlist)
+}
+
+class Ui {
+  + showWatchlist(watchlist: Watchlist)
+  + showMessage(message: String)
+}
 
 CG2StocksTracker --> Watchlist : add/remove/list/buy
 Watchlist --> PortfolioBook : buyItem(...)

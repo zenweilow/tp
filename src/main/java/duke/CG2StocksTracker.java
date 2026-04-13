@@ -30,7 +30,18 @@ public class CG2StocksTracker {
         try {
             loadedBook = storage.load();
         } catch (AppException e) {
-            ui.showMessage("Storage load failed: " + e.getMessage());
+            if (storage.isCorruptedStorage(e)) {
+                try {
+                    Path preservedFile = storage.quarantineCorruptedStorageFile();
+                    ui.showMessage("Storage load failed: " + e.getMessage()
+                            + " Preserved original file as: " + preservedFile.getFileName());
+                } catch (AppException quarantineError) {
+                    ui.showMessage("Storage load failed: " + e.getMessage()
+                            + " " + quarantineError.getMessage());
+                }
+            } else {
+                ui.showMessage("Storage load failed: " + e.getMessage());
+            }
             loadedBook = new PortfolioBook();
         }
         this.portfolioBook = loadedBook;
@@ -343,11 +354,12 @@ public class CG2StocksTracker {
     private void handleWatchBuy(ParsedCommand command) throws AppException {
         AssetType type = command.assetType();
         String ticker = command.ticker();
+        double quantity = command.quantity();
         String portfolioName = command.listTarget();
 
         Watchlist.BuyResult result;
         try {
-            result = watchlist.buyItem(type, ticker, portfolioName, portfolioBook);
+            result = watchlist.buyItem(type, ticker, quantity, portfolioName, portfolioBook);
         } catch (IllegalArgumentException e) {
             throw new AppException(e.getMessage());
         }
@@ -357,7 +369,8 @@ public class CG2StocksTracker {
                 + " of " + result.ticker()
                 + " (" + result.assetType().toDisplay() + ") into portfolio " + result.portfolioName()
                 + " at " + Ui.formatMoney(result.buyPrice())
-                + ". New quantity = " + Ui.formatNumber(result.resultingQuantity()));
+                + ". New quantity = " + Ui.formatNumber(result.resultingQuantity())
+                + ". Removed from watchlist.");
     }
 
     /**

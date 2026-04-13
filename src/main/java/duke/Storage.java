@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Storage {
     private static final String CORRUPTED_FILE_MESSAGE = "Corrupted storage file.";
     private static final String CORRUPTED_WATCHLIST_FILE_MESSAGE = "Corrupted watchlist storage file.";
+    private static final DateTimeFormatter BAD_FILE_TIMESTAMP_FORMAT =
+            DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
     private final Path filePath;
     private final Path watchlistFilePath;
 
@@ -73,6 +78,28 @@ public class Storage {
             throw new AppException(CORRUPTED_FILE_MESSAGE);
         } catch (IOException e) {
             throw new AppException("Unable to read storage file.");
+        }
+    }
+
+    public boolean isCorruptedStorage(AppException exception) {
+        if (exception == null) {
+            throw new IllegalArgumentException("exception must not be null");
+        }
+        return CORRUPTED_FILE_MESSAGE.equals(exception.getMessage());
+    }
+
+    public Path quarantineCorruptedStorageFile() throws AppException {
+        createStorageFileIfMissing();
+
+        Path quarantinedPath = filePath.resolveSibling(filePath.getFileName()
+                + ".bad-" + LocalDateTime.now().format(BAD_FILE_TIMESTAMP_FORMAT));
+
+        try {
+            Files.move(filePath, quarantinedPath, StandardCopyOption.REPLACE_EXISTING);
+            Files.createFile(filePath);
+            return quarantinedPath;
+        } catch (IOException e) {
+            throw new AppException("Unable to preserve corrupted storage file.");
         }
     }
 

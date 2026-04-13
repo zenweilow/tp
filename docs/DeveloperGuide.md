@@ -39,7 +39,6 @@ The application follows a layered command pipeline:
 5. `Storage` persists state after successful state-changing operations.
 
 ![Architecture Overview Class Diagram](diagrams/PNG/architecture-overview-class.png)
-![Remove Command Sequence](diagrams/PNG/remove-command-sequence.png)
 
 ### Core class responsibilities
 
@@ -684,11 +683,11 @@ Watchlist records in `data/CG2StocksTracker.txt.watchlist`:
 
 ## Non-Functional Requirements
 
-- Platform support: Java 17+ on Windows/macOS/Linux.
-- Reliability: malformed command input must not crash the app.
-- Persistence: successful state-changing operations must survive restart.
-- Usability: command errors should provide actionable messages.
-- Performance: command operations should be responsive for small-to-medium personal portfolios.
+- Platform support: the product must run on Java 17 or above on Windows, macOS, and Linux.
+- Reliability: invalid or malformed user input must not terminate the application; after an error, the app must display an error message and continue accepting the next command.
+- Persistence: after any successful state-changing command, the resulting portfolio and watchlist data must still be present after the application is closed and started again.
+- Usability: when a command is rejected due to invalid input, the error message must identify the invalid command or option and state the expected command format or constraint.
+- Performance: on a typical personal dataset of up to 10 portfolios and 200 total holdings, each single command should complete and print its response within 1 second on a standard developer laptop.
 
 ## Glossary (v2.0 data model)
 

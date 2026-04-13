@@ -1,14 +1,46 @@
 @startuml
 title Add Command Class View
 
-class Parser
-class ParsedCommand
-class CG2StocksTracker
-class PortfolioBook
-class Portfolio
-class Holding
-class Storage
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class ParsedCommand {
+  + assetType(): AssetType
+  + ticker(): String
+  + quantity(): Double
+  + price(): Double
+  + totalFees(): double
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class PortfolioBook {
+  + getActivePortfolio(): Portfolio
+}
+
+class Portfolio {
+  + hasHolding(assetType: AssetType, ticker: String): boolean
+  + addHolding(...): double
+  + getHolding(assetType: AssetType, ticker: String): Holding
+}
+
+class Holding {
+  + addQuantity(quantityToAdd: double, purchasePrice: double, totalFees: double)
+  + getAverageBuyPrice(): double
+}
+
+class Storage {
+  + save(portfolioBook: PortfolioBook)
+  + saveWatchlist(watchlist: Watchlist)
+}
+
+class Ui {
+  + showAddedHolding(holding: Holding)
+  + showMessage(message: String)
+}
 
 Parser --> ParsedCommand
 CG2StocksTracker --> ParsedCommand : totalFees()

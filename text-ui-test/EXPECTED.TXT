@@ -28,7 +28,7 @@ Available commands:
 /watch add --type TYPE --ticker TICKER [--price PRICE]
 /watch remove --type TYPE --ticker TICKER
 /watch list
-/watch buy --type TYPE --ticker TICKER --portfolio NAME
+/watch buy --type TYPE --ticker TICKER --qty QTY --portfolio NAME
 /set --ticker TICKER --price PRICE [--type TYPE]
 /setmany --file FILEPATH
 /value
@@ -90,7 +90,7 @@ Average buy price: 80.00
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 STOCK VOO 1.5 300.00 450.00
+1 TYPE: STOCK TICKER: VOO QTY: 1.5 PRICE: 300.00 VALUE: 450.00
 Total holdings: 1
 Total value: 450.00
 ----------------------------------------
@@ -98,7 +98,7 @@ Total value: 450.00
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 ETF QQQ 2 400.00 800.00
+1 TYPE: ETF TICKER: QQQ QTY: 2 PRICE: 400.00 VALUE: 800.00
 Total holdings: 1
 Total value: 800.00
 ----------------------------------------
@@ -106,7 +106,7 @@ Total value: 800.00
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 BOND BND 3 80.00 240.00
+1 TYPE: BOND TICKER: BND QTY: 3 PRICE: 80.00 VALUE: 240.00
 Total holdings: 1
 Total value: 240.00
 ----------------------------------------
@@ -114,9 +114,9 @@ Total value: 240.00
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 STOCK VOO 1.5 300.00 450.00
-2 ETF QQQ 2 400.00 800.00
-3 BOND BND 3 80.00 240.00
+1 TYPE: STOCK TICKER: VOO QTY: 1.5 PRICE: 300.00 VALUE: 450.00
+2 TYPE: ETF TICKER: QQQ QTY: 2 PRICE: 400.00 VALUE: 800.00
+3 TYPE: BOND TICKER: BND QTY: 3 PRICE: 80.00 VALUE: 240.00
 Total holdings: 3
 Total value: 1490.00
 ----------------------------------------
@@ -235,7 +235,7 @@ Total unrealised P&L: +6.00
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 BOND BND 3 82.00 246.00
+1 TYPE: BOND TICKER: BND QTY: 3 PRICE: 82.00 VALUE: 246.00
 Total holdings: 1
 Total value: 246.00
 ----------------------------------------
@@ -249,7 +249,7 @@ RishPortfolio realized=+440.00 unrealised=+6.00
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 BOND BND 3 82.00 246.00
+1 TYPE: BOND TICKER: BND QTY: 3 PRICE: 82.00 VALUE: 246.00
 Total holdings: 1
 Total value: 246.00
 ----------------------------------------

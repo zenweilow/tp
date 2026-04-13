@@ -1,9 +1,17 @@
 @startuml
 title Exit Command Class View
 
-class Parser
-class CG2StocksTracker
-class Ui
+class Parser {
+  + parse(input: String): ParsedCommand
+}
+
+class CG2StocksTracker {
+  + run()
+}
+
+class Ui {
+  + showGoodbye()
+}
 
 CG2StocksTracker --> Ui : showGoodbye()
 @enduml
