@@ -131,4 +131,16 @@ public class PortfolioTest {
 
         assertFalse(updated);
     }
+
+    @Test
+    void countHoldingsForTicker_countsAcrossAssetTypes() {
+        Portfolio portfolio = new Portfolio("demo");
+        portfolio.addHolding(AssetType.STOCK, "VOO", 1, 300, 0);
+        portfolio.addHolding(AssetType.ETF, "VOO", 1, 305, 0);
+        portfolio.addHolding(AssetType.BOND, "BND", 2, 80, 0);
+
+        assertEquals(2, portfolio.countHoldingsForTicker("VOO"));
+        assertEquals(1, portfolio.countHoldingsForTicker("BND"));
+        assertEquals(0, portfolio.countHoldingsForTicker("MISSING"));
+    }
 }

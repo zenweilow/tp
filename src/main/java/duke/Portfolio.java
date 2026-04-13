@@ -93,6 +93,17 @@ public class Portfolio {
         return updatedCount;
     }
 
+    public int countHoldingsForTicker(String ticker) {
+        String normalizedTicker = ticker == null ? "" : ticker.trim().toUpperCase();
+        int matchedCount = 0;
+        for (Holding holding : holdings.values()) {
+            if (holding.getTicker().trim().toUpperCase().equals(normalizedTicker)) {
+                matchedCount++;
+            }
+        }
+        return matchedCount;
+    }
+
     public boolean setPriceForHolding(AssetType assetType, String ticker, double price) {
         if (assetType == null) {
             throw new IllegalArgumentException("assetType must not be null");

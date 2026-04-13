@@ -5,6 +5,7 @@ cd "${0%/*}"
 
 cd ..
 rm -f data/CG2StocksTracker.txt
+rm -f data/CG2StocksTracker.txt.watchlist
 ./gradlew clean shadowJar
 
 java  -jar $(find build/libs/ -mindepth 1 -print -quit) < text-ui-test/input.txt > text-ui-test/ACTUAL.TXT

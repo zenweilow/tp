@@ -3,6 +3,7 @@ package duke;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 public class ParserTest {
@@ -136,14 +137,10 @@ public class ParserTest {
     }
 
     @Test
-    void parseWatchAdd_withoutPrice_parsesNullPrice() throws AppException {
-        ParsedCommand command = parser.parse("/watch add --type stock --ticker voo");
-
-        assertEquals(CommandType.WATCH, command.type());
-        assertEquals("add", command.name());
-        assertEquals(AssetType.STOCK, command.assetType());
-        assertEquals("VOO", command.ticker());
-        assertNull(command.price());
+    void parseWatchAdd_withoutPrice_throws() {
+        AppException ex = assertThrows(AppException.class, () ->
+                parser.parse("/watch add --type stock --ticker voo"));
+        assertTrue(ex.getMessage().contains("Missing required option: --price"));
     }
 
     @Test
@@ -222,5 +219,49 @@ public class ParserTest {
 
         assertEquals(CommandType.INSIGHTS, command.type());
         assertEquals("--top 3 --chart", command.listTarget());
+    }
+
+    @Test
+    void parseAdd_withMissingQtyValue_reportsCorrectOption() {
+        AppException ex = assertThrows(AppException.class, () ->
+                parser.parse("/add --type etf --ticker asd --qty --price 100"));
+        assertEquals("Missing value for option: --qty", ex.getMessage());
+    }
+
+    @Test
+    void parseAdd_withMissingQtyAndPriceValues_reportsFirstMissingOption() {
+        AppException ex = assertThrows(AppException.class, () ->
+                parser.parse("/add --type etf --ticker asd --qty --price"));
+        assertEquals("Missing value for option: --qty", ex.getMessage());
+    }
+
+    @Test
+    void parseAdd_withNaNQuantity_throws() {
+        assertThrows(AppException.class, () ->
+                parser.parse("/add --type stock --ticker VOO --qty NaN --price 100"));
+    }
+
+    @Test
+    void parseAdd_withInfinityQuantity_throws() {
+        assertThrows(AppException.class, () ->
+                parser.parse("/add --type stock --ticker VOO --qty Infinity --price 100"));
+    }
+
+    @Test
+    void parseAdd_withNaNPrice_throws() {
+        assertThrows(AppException.class, () ->
+                parser.parse("/add --type stock --ticker VOO --qty 1 --price NaN"));
+    }
+
+    @Test
+    void parseAdd_withInfinityPrice_throws() {
+        assertThrows(AppException.class, () ->
+                parser.parse("/add --type stock --ticker VOO --qty 1 --price Infinity"));
+    }
+
+    @Test
+    void parseAdd_withInfinityFee_throws() {
+        assertThrows(AppException.class, () ->
+                parser.parse("/add --type stock --ticker VOO --qty 1 --price 100 --brokerage Infinity"));
     }
 }

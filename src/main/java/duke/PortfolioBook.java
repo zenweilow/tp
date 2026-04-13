@@ -15,6 +15,9 @@ public class PortfolioBook {
     }
 
     public void createPortfolio(String name) throws AppException {
+        if (name == null || name.isBlank()) {
+            throw new AppException("Portfolio name cannot be blank");
+        }
         if (portfolios.containsKey(name)) {
             throw new AppException("Portfolio already exists: " + name);
         }

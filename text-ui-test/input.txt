@@ -26,4 +26,16 @@
 /list --bond
 /list --portfolios
 /list
+/create " "
+/add --type stock --ticker bad --qty NaN --price 100
+/add --type stock --ticker bad --qty 1 --price Infinity
+/add --type etf --ticker asd --qty --price 100
+/add --type etf --ticker asd --qty --price
+/watch add --type etf --ticker SPY
+/watch add --type etf --ticker SPY --price 500
+/watch buy --type etf --ticker SPY --qty 2 --portfolio RishPortfolio
+/add --type stock --ticker VOO --qty 1 --price 300
+/add --type etf --ticker VOO --qty 1 --price 310
+/set --ticker VOO --price 650
+/value
 /exit

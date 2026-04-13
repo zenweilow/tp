@@ -73,8 +73,9 @@ public class WatchlistTest {
         PortfolioBook portfolioBook = new PortfolioBook();
         portfolioBook.createPortfolio("growth");
 
-        assertThrows(IllegalArgumentException.class, () ->
-                watchlist.buyItem(AssetType.STOCK, "VOO", 1.0, "growth", portfolioBook));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+            watchlist.buyItem(AssetType.STOCK, "VOO", 1.0, "growth", portfolioBook));
+        assertTrue(ex.getMessage().contains("Add it again with --price before buying."));
     }
 
     @Test
@@ -86,5 +87,26 @@ public class WatchlistTest {
 
         assertThrows(IllegalArgumentException.class, () ->
                 watchlist.buyItem(AssetType.STOCK, "VOO", 1.0, "missing", portfolioBook));
+    }
+
+    @Test
+    void buyItem_existingHolding_updatesLastPriceToBuyPrice() throws AppException {
+        Watchlist watchlist = new Watchlist();
+        watchlist.addItem(AssetType.STOCK, "VOO", 350.0);
+
+        PortfolioBook portfolioBook = new PortfolioBook();
+        portfolioBook.createPortfolio("growth");
+        Portfolio portfolio = portfolioBook.getPortfolio("growth");
+        assertNotNull(portfolio);
+
+        portfolio.addHolding(AssetType.STOCK, "VOO", 1.0, 300.0, 0.0);
+        portfolio.setPriceForHolding(AssetType.STOCK, "VOO", 300.0);
+
+        watchlist.buyItem(AssetType.STOCK, "VOO", 1.0, "growth", portfolioBook);
+
+        Holding updated = portfolio.getHolding(AssetType.STOCK, "VOO");
+        assertNotNull(updated);
+        assertEquals(2.0, updated.getQuantity());
+        assertEquals(350.0, updated.getLastPrice());
     }
 }

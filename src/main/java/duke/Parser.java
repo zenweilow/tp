@@ -161,7 +161,7 @@ public class Parser {
         validateAllowedOptions(options, "--type", "--ticker", "--price");
         AssetType type = parseAssetType(requireOption(options, "--type"));
         String ticker = normaliseTicker(requireOption(options, "--ticker"));
-        Double price = parseOptionalPositiveDouble(options.get("--price"), "Price must be > 0");
+        double price = parsePositiveDouble(requireOption(options, "--price"), "Price must be > 0");
         return new ParsedCommand(CommandType.WATCH, "add", type, ticker, null, price,
                 null, null, null, null, null);
     }
@@ -228,6 +228,9 @@ public class Parser {
             if (!key.startsWith("--")) {
                 throw new AppException("Invalid option: " + key);
             }
+            if (value.startsWith("--") || value.isBlank()) {
+                throw new AppException("Missing value for option: " + key);
+            }
             if (options.containsKey(key.toLowerCase())) {
                 throw new AppException("Duplicate option: " + key.toLowerCase());
             }
@@ -260,7 +263,7 @@ public class Parser {
     private double parsePositiveDouble(String rawValue, String errorMessage) throws AppException {
         try {
             double value = Double.parseDouble(rawValue);
-            if (value <= 0) {
+            if (!Double.isFinite(value) || value <= 0) {
                 throw new AppException(errorMessage);
             }
             return value;
@@ -284,7 +287,7 @@ public class Parser {
 
         try {
             double value = Double.parseDouble(rawValue);
-            if (value < 0) {
+            if (!Double.isFinite(value) || value < 0) {
                 throw new AppException(errorMessage);
             }
             return value;

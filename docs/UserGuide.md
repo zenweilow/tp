@@ -52,7 +52,7 @@ Notes about command syntax:
 - Duplicate options in one command are rejected.
 - Unknown options are rejected.
 - Portfolio names can contain spaces when quoted. Example: `/create "Long Term"`.
-- Quantity and price fields that require positive values must be `> 0`.
+- Quantity and price fields that require positive values must be finite and `> 0` (for example, `NaN` and `Infinity` are rejected).
 - Fee fields (`--brokerage`, `--fx`, `--platform`) must be `>= 0`.
 
 ## Data Storage
@@ -145,6 +145,8 @@ Notes:
 - If no active portfolio exists, `/list` shows portfolio names.
 - Type-filtered list keeps the same table style but only one asset type.
 - `/list --portfolios` shows portfolio-level realized and unrealized P&L in alphabetical order.
+- Holdings table columns are: `TYPE`, `TICKR`, `QTY`, `AVG_BUY`, `MKT_PRICE`, `VALUE`.
+- `AVG_BUY` is cost basis. `MKT_PRICE` is the latest market price reference. `VALUE = QTY x MKT_PRICE`.
 
 ### Add holding: `/add`
 
@@ -219,7 +221,8 @@ Formats:
 
 Behavior:
 
-- Without `--type`: update all holdings in active portfolio with matching ticker.
+- Without `--type`: updates only if exactly one holding with that ticker exists in the active portfolio.
+- If the same ticker exists across multiple asset types, command fails and requires `--type`.
 - With `--type`: update only one matching holding by `(type, ticker)`.
 
 Validation:
@@ -238,16 +241,17 @@ Tracks assets you may buy later.
 
 Formats:
 
-- `/watch add --type TYPE --ticker TICKER [--price PRICE]`
+- `/watch add --type TYPE --ticker TICKER --price PRICE`
 - `/watch remove --type TYPE --ticker TICKER`
 - `/watch list`
-- `/watch buy --type TYPE --ticker TICKER --portfolio PORTFOLIO_NAME`
+- `/watch buy --type TYPE --ticker TICKER --qty QTY --portfolio PORTFOLIO_NAME`
 
 Notes:
 
 - `TYPE` must be `stock`, `etf`, or `bond`.
 - Watchlist keys are `(type, ticker)`; duplicates are rejected.
-- `/watch buy` buys exactly 1 unit at watchlist price, into target portfolio, then removes item from watchlist.
+- `/watch add` requires a price; adding without `--price` is rejected.
+- `/watch buy` buys the specified `QTY` at watchlist price into target portfolio, then removes item from watchlist.
 - `/watch buy` fails if watchlist item has no price.
 
 Examples:
@@ -304,7 +308,7 @@ Output includes:
 
 - Current total value (priced holdings only)
 - Portfolio realized P&L
-- Per-holding unrealized P&L
+- Per-holding unrealized P&L with type shown for disambiguation
 - Total unrealized P&L
 
 Formula:

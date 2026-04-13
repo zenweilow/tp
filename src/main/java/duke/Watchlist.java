@@ -110,7 +110,8 @@ public class Watchlist {
         }
         if (!item.hasPrice()) {
             throw new IllegalArgumentException("Watchlist item has no price: "
-                    + normalizedTicker + " (" + assetType.toDisplay() + ")");
+                    + normalizedTicker + " (" + assetType.toDisplay() + "). "
+                    + "Add it again with --price before buying.");
         }
 
         String trimmedPortfolioName = portfolioName.trim();
@@ -121,6 +122,10 @@ public class Watchlist {
 
         double buyPrice = item.targetPrice();
         double resultingQuantity = portfolio.addHolding(item.assetType(), item.ticker(), quantity, buyPrice, 0);
+        Holding holding = portfolio.getHolding(item.assetType(), item.ticker());
+        if (holding != null) {
+            holding.setLastPrice(buyPrice);
+        }
         items.remove(key);
         return new BuyResult(trimmedPortfolioName, item.assetType(), item.ticker(), quantity,
                 buyPrice, resultingQuantity);

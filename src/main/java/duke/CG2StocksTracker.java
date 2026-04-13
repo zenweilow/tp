@@ -262,7 +262,7 @@ public class CG2StocksTracker {
     /**
      * Updates last price(s) in the active portfolio and saves the result.
      * If type is provided, updates one holding by type+ticker.
-     * Otherwise, updates all holdings with the same ticker.
+      * Otherwise, updates only if the ticker matches exactly one holding.
      *
      * @param command parsed set command.
      * @throws AppException if no matching holding is found or saving fails.
@@ -284,12 +284,19 @@ public class CG2StocksTracker {
             return;
         }
 
-        int updatedCount = portfolio.setPriceForTicker(ticker, price);
-        if (updatedCount == 0) {
+        int matchedCount = portfolio.countHoldingsForTicker(ticker);
+        if (matchedCount == 0) {
             throw new AppException("Holding not found for ticker: " + ticker);
         }
+        if (matchedCount > 1) {
+            throw new AppException("Multiple holdings found for ticker: " + ticker
+                    + ". Please specify --type.");
+        }
+
+        int updatedCount = portfolio.setPriceForTicker(ticker, price);
         save();
-        ui.showMessage("Updated price: " + ticker + " = " + Ui.formatMoney(price));
+        ui.showMessage("Updated price: " + ticker + " = " + Ui.formatMoney(price)
+                + " (" + updatedCount + " holding updated)");
     }
 
     private void handleWatch(ParsedCommand command) throws AppException {

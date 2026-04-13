@@ -38,6 +38,7 @@ public class UiTest {
         assertTrue(output.contains("/list --portfolios"));
         assertTrue(output.contains("/watch remove --type TYPE --ticker TICKER"));
         assertTrue(output.contains("/watch list"));
+        assertTrue(output.contains("/watch add --type TYPE --ticker TICKER --price PRICE"));
         assertTrue(output.contains("/watch buy --type TYPE --ticker TICKER --qty QTY --portfolio NAME"));
         assertTrue(output.contains("/set --ticker TICKER --price PRICE [--type TYPE]"));
         assertTrue(output.contains("/setmany --file FILEPATH"));
@@ -73,10 +74,15 @@ public class UiTest {
 
         String output = capturedOut.toString();
         assertTrue(output.contains("Portfolio: main"));
-        assertTrue(output.contains("1 TYPE: STOCK TICKER: AAPL QTY: 2 PRICE: 100.00 VALUE: 200.00"));
-        assertTrue(output.contains("2 TYPE: ETF TICKER: QQQ QTY: 3 PRICE: 350.00 VALUE: 1050.00"));
+        assertTrue(output.contains("#   TYPE  TICKR"));
+        assertTrue(output.contains("AAPL"));
+        assertTrue(output.contains("QQQ"));
+        assertTrue(output.contains("100.00"));
+        assertTrue(output.contains("350.00"));
+        assertTrue(output.contains("1050.00"));
         assertTrue(output.contains("Total holdings: 2"));
         assertTrue(output.contains("Total value: 1250.00"));
+        assertTrue(output.contains("Note: VALUE = QTY x MKT_PRICE"));
     }
 
     @Test
@@ -90,7 +96,9 @@ public class UiTest {
 
         String output = capturedOut.toString();
         assertTrue(output.contains("Portfolio: main"));
-        assertTrue(output.contains("1 TYPE: STOCK TICKER: AAPL QTY: 2 PRICE: 90.00 VALUE: 180.00"));
+        assertTrue(output.contains("AAPL"));
+        assertTrue(output.contains("180.00"));
+        assertTrue(!output.contains("QQQ"));
         assertTrue(output.contains("Total holdings: 1"));
         assertTrue(output.contains("Total value: 180.00"));
     }
@@ -167,12 +175,12 @@ public class UiTest {
         assertTrue(output.contains("Current total value: 1000.00"));
         assertTrue(output.contains("Realized P&L: +0.00"));
         assertTrue(output.contains("Unrealised P&L by holding:"));
-        assertTrue(output.contains("BND: Quantity 10, Avg. Price = 70.00, Last Price = 70.00, Unrealised P&L = +0.00"));
-        assertTrue(output.contains(
-                "BND: Quantity 10, Avg. Price = 70.00, Last Price = 70.00, Unrealised P&L = +0.00"));
-
-        assertTrue(output.contains(
-            "MSFT: Quantity 1, Avg. Price = 250.00, Last Price = 300.00, Unrealised P&L = +50.00"));
+        assertTrue(output.contains("TICKR  TYPE"));
+        assertTrue(output.contains("BND"));
+        assertTrue(output.contains("BOND"));
+        assertTrue(output.contains("MSFT"));
+        assertTrue(output.contains("STOCK"));
+        assertTrue(output.contains("+50.00"));
         assertTrue(output.contains("Total unrealised P&L: +50.00"));
     }
 

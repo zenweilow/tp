@@ -4,6 +4,7 @@ pushd %~dp0
 
 cd ..
 if exist data\CG2StocksTracker.txt del /q data\CG2StocksTracker.txt
+if exist data\CG2StocksTracker.txt.watchlist del /q data\CG2StocksTracker.txt.watchlist
 call gradlew clean shadowJar
 
 for /f "tokens=*" %%a in (

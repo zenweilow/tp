@@ -25,7 +25,7 @@ Available commands:
   Optional fees: --brokerage FEE --fx FEE --platform FEE
 /remove --type TYPE --ticker TICKER
   Optional fields: --qty QTY --price PRICE --brokerage FEE --fx FEE --platform FEE
-/watch add --type TYPE --ticker TICKER [--price PRICE]
+                  /watch add --type TYPE --ticker TICKER --price PRICE
 /watch remove --type TYPE --ticker TICKER
 /watch list
 /watch buy --type TYPE --ticker TICKER --qty QTY --portfolio NAME
@@ -90,35 +90,47 @@ Average buy price: 80.00
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 TYPE: STOCK TICKER: VOO QTY: 1.5 PRICE: 300.00 VALUE: 450.00
+#   TYPE  TICKR       QTY  AVG_BUY  MKT_PRICE      VALUE
+----------------------------------------------------------------
+1   STOCK VOO         1.5   320.00     300.00     450.00
 Total holdings: 1
 Total value: 450.00
+Note: VALUE = QTY x MKT_PRICE. AVG_BUY is cost basis.
 ----------------------------------------
 
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 TYPE: ETF TICKER: QQQ QTY: 2 PRICE: 400.00 VALUE: 800.00
+#   TYPE  TICKR       QTY  AVG_BUY  MKT_PRICE      VALUE
+----------------------------------------------------------------
+1   ETF   QQQ           2   400.00     400.00     800.00
 Total holdings: 1
 Total value: 800.00
+Note: VALUE = QTY x MKT_PRICE. AVG_BUY is cost basis.
 ----------------------------------------
 
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 TYPE: BOND TICKER: BND QTY: 3 PRICE: 80.00 VALUE: 240.00
+#   TYPE  TICKR       QTY  AVG_BUY  MKT_PRICE      VALUE
+----------------------------------------------------------------
+1   BOND  BND           3    80.00      80.00     240.00
 Total holdings: 1
 Total value: 240.00
+Note: VALUE = QTY x MKT_PRICE. AVG_BUY is cost basis.
 ----------------------------------------
 
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 TYPE: STOCK TICKER: VOO QTY: 1.5 PRICE: 300.00 VALUE: 450.00
-2 TYPE: ETF TICKER: QQQ QTY: 2 PRICE: 400.00 VALUE: 800.00
-3 TYPE: BOND TICKER: BND QTY: 3 PRICE: 80.00 VALUE: 240.00
+#   TYPE  TICKR       QTY  AVG_BUY  MKT_PRICE      VALUE
+----------------------------------------------------------------
+1   STOCK VOO         1.5   320.00     300.00     450.00
+2   ETF   QQQ           2   400.00     400.00     800.00
+3   BOND  BND           3    80.00      80.00     240.00
 Total holdings: 3
 Total value: 1490.00
+Note: VALUE = QTY x MKT_PRICE. AVG_BUY is cost basis.
 ----------------------------------------
 
 
@@ -127,15 +139,17 @@ Portfolio: RishPortfolio
 Current total value: 1490.00
 Realized P&L: +0.00
 Unrealised P&L by holding:
-VOO: Quantity 1.5, Avg. Price = 320.00, Last Price = 300.00, Unrealised P&L = -30.00
-QQQ: Quantity 2, Avg. Price = 400.00, Last Price = 400.00, Unrealised P&L = +0.00
-BND: Quantity 3, Avg. Price = 80.00, Last Price = 80.00, Unrealised P&L = +0.00
+TICKR  TYPE       QTY      AVG     LAST      U_PNL
+-------------------------------------------------------
+VOO    STOCK      1.5   320.00   300.00     -30.00
+QQQ    ETF          2   400.00   400.00      +0.00
+BND    BOND         3    80.00    80.00      +0.00
 Total unrealised P&L: -30.00
 ----------------------------------------
 
 
 ----------------------------------------
-Updated price: VOO = 600.00
+Updated price: VOO = 600.00 (1 holding updated)
 ----------------------------------------
 
 
@@ -144,9 +158,11 @@ Portfolio: RishPortfolio
 Current total value: 1940.00
 Realized P&L: +0.00
 Unrealised P&L by holding:
-VOO: Quantity 1.5, Avg. Price = 320.00, Last Price = 600.00, Unrealised P&L = +420.00
-QQQ: Quantity 2, Avg. Price = 400.00, Last Price = 400.00, Unrealised P&L = +0.00
-BND: Quantity 3, Avg. Price = 80.00, Last Price = 80.00, Unrealised P&L = +0.00
+TICKR  TYPE       QTY      AVG     LAST      U_PNL
+-------------------------------------------------------
+VOO    STOCK      1.5   320.00   600.00    +420.00
+QQQ    ETF          2   400.00   400.00      +0.00
+BND    BOND         3    80.00    80.00      +0.00
 Total unrealised P&L: +420.00
 ----------------------------------------
 
@@ -161,9 +177,11 @@ Portfolio: RishPortfolio
 Current total value: 1640.00
 Realized P&L: +150.00
 Unrealised P&L by holding:
-VOO: Quantity 1, Avg. Price = 320.00, Last Price = 600.00, Unrealised P&L = +280.00
-QQQ: Quantity 2, Avg. Price = 400.00, Last Price = 400.00, Unrealised P&L = +0.00
-BND: Quantity 3, Avg. Price = 80.00, Last Price = 80.00, Unrealised P&L = +0.00
+TICKR  TYPE       QTY      AVG     LAST      U_PNL
+-------------------------------------------------------
+VOO    STOCK        1   320.00   600.00    +280.00
+QQQ    ETF          2   400.00   400.00      +0.00
+BND    BOND         3    80.00    80.00      +0.00
 Total unrealised P&L: +280.00
 ----------------------------------------
 
@@ -178,9 +196,11 @@ Portfolio: RishPortfolio
 Current total value: 1340.00
 Realized P&L: +290.00
 Unrealised P&L by holding:
-VOO: Quantity 0.5, Avg. Price = 320.00, Last Price = 600.00, Unrealised P&L = +140.00
-QQQ: Quantity 2, Avg. Price = 400.00, Last Price = 400.00, Unrealised P&L = +0.00
-BND: Quantity 3, Avg. Price = 80.00, Last Price = 80.00, Unrealised P&L = +0.00
+TICKR  TYPE       QTY      AVG     LAST      U_PNL
+-------------------------------------------------------
+VOO    STOCK      0.5   320.00   600.00    +140.00
+QQQ    ETF          2   400.00   400.00      +0.00
+BND    BOND         3    80.00    80.00      +0.00
 Total unrealised P&L: +140.00
 ----------------------------------------
 
@@ -195,8 +215,10 @@ Portfolio: RishPortfolio
 Current total value: 1040.00
 Realized P&L: +430.00
 Unrealised P&L by holding:
-QQQ: Quantity 2, Avg. Price = 400.00, Last Price = 400.00, Unrealised P&L = +0.00
-BND: Quantity 3, Avg. Price = 80.00, Last Price = 80.00, Unrealised P&L = +0.00
+TICKR  TYPE       QTY      AVG     LAST      U_PNL
+-------------------------------------------------------
+QQQ    ETF          2   400.00   400.00      +0.00
+BND    BOND         3    80.00    80.00      +0.00
 Total unrealised P&L: +0.00
 ----------------------------------------
 
@@ -211,7 +233,9 @@ Portfolio: RishPortfolio
 Current total value: 240.00
 Realized P&L: +440.00
 Unrealised P&L by holding:
-BND: Quantity 3, Avg. Price = 80.00, Last Price = 80.00, Unrealised P&L = +0.00
+TICKR  TYPE       QTY      AVG     LAST      U_PNL
+-------------------------------------------------------
+BND    BOND         3    80.00    80.00      +0.00
 Total unrealised P&L: +0.00
 ----------------------------------------
 
@@ -228,16 +252,21 @@ Portfolio: RishPortfolio
 Current total value: 246.00
 Realized P&L: +440.00
 Unrealised P&L by holding:
-BND: Quantity 3, Avg. Price = 80.00, Last Price = 82.00, Unrealised P&L = +6.00
+TICKR  TYPE       QTY      AVG     LAST      U_PNL
+-------------------------------------------------------
+BND    BOND         3    80.00    82.00      +6.00
 Total unrealised P&L: +6.00
 ----------------------------------------
 
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 TYPE: BOND TICKER: BND QTY: 3 PRICE: 82.00 VALUE: 246.00
+#   TYPE  TICKR       QTY  AVG_BUY  MKT_PRICE      VALUE
+----------------------------------------------------------------
+1   BOND  BND           3    80.00      82.00     246.00
 Total holdings: 1
 Total value: 246.00
+Note: VALUE = QTY x MKT_PRICE. AVG_BUY is cost basis.
 ----------------------------------------
 
 
@@ -249,9 +278,94 @@ RishPortfolio realized=+440.00 unrealised=+6.00
 
 ----------------------------------------
 Portfolio: RishPortfolio
-1 TYPE: BOND TICKER: BND QTY: 3 PRICE: 82.00 VALUE: 246.00
+#   TYPE  TICKR       QTY  AVG_BUY  MKT_PRICE      VALUE
+----------------------------------------------------------------
+1   BOND  BND           3    80.00      82.00     246.00
 Total holdings: 1
 Total value: 246.00
+Note: VALUE = QTY x MKT_PRICE. AVG_BUY is cost basis.
+----------------------------------------
+
+
+----------------------------------------
+
+----------------------------------------
+Portfolio name cannot be blank
+----------------------------------------
+
+
+----------------------------------------
+Quantity must be > 0
+----------------------------------------
+
+
+----------------------------------------
+Price must be > 0
+----------------------------------------
+
+
+----------------------------------------
+Missing value for option: --qty
+----------------------------------------
+
+
+----------------------------------------
+Missing value for option: --qty
+----------------------------------------
+
+
+----------------------------------------
+Missing required option: --price
+----------------------------------------
+
+
+----------------------------------------
+Added to watchlist: SPY (etf), price = 500.00
+----------------------------------------
+
+
+----------------------------------------
+Bought 2 of SPY (etf) into portfolio RishPortfolio at 500.00. New quantity = 2. Removed from watchlist.
+----------------------------------------
+
+
+----------------------------------------
+Added holding:
+Type: stock
+Ticker: VOO
+Quantity: 1
+Average buy price: 300.00
+----------------------------------------
+
+
+----------------------------------------
+Added holding:
+Type: etf
+Ticker: VOO
+Quantity: 1
+Average buy price: 310.00
+----------------------------------------
+
+
+----------------------------------------
+
+----------------------------------------
+Multiple holdings found for ticker: VOO. Please specify --type.
+----------------------------------------
+
+
+----------------------------------------
+Portfolio: RishPortfolio
+Current total value: 1856.00
+Realized P&L: +440.00
+Unrealised P&L by holding:
+TICKR  TYPE       QTY      AVG     LAST      U_PNL
+-------------------------------------------------------
+BND    BOND         3    80.00    82.00      +6.00
+SPY    ETF          2   500.00   500.00      +0.00
+VOO    STOCK        1   300.00   300.00      +0.00
+VOO    ETF          1   310.00   310.00      +0.00
+Total unrealised P&L: +6.00
 ----------------------------------------
 
 

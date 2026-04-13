@@ -105,7 +105,7 @@ public class Ui {
                      Optional fees: --brokerage FEE --fx FEE --platform FEE
                    /remove --type TYPE --ticker TICKER
                      Optional fields: --qty QTY --price PRICE --brokerage FEE --fx FEE --platform FEE
-                   /watch add --type TYPE --ticker TICKER [--price PRICE]
+                                     /watch add --type TYPE --ticker TICKER --price PRICE
                    /watch remove --type TYPE --ticker TICKER
                    /watch list
                    /watch buy --type TYPE --ticker TICKER --qty QTY --portfolio NAME
@@ -217,6 +217,11 @@ public class Ui {
         assert portfolio != null : "portfolio must not be null";
         System.out.println("Portfolio: " + portfolio.getName());
 
+        String header = String.format("%-3s %-5s %-6s %8s %8s %10s %10s",
+            "#", "TYPE", "TICKR", "QTY", "AVG_BUY", "MKT_PRICE", "VALUE");
+        System.out.println(header);
+        System.out.println("----------------------------------------------------------------");
+
         List<Holding> holdings = portfolio.getHoldings();
         int index = 1;
         double filteredValueTotal = 0.0;
@@ -228,17 +233,14 @@ public class Ui {
             String priceText = holding.hasPrice() ? formatMoney(holding.getLastPrice()) : "-";
             String valueText = holding.hasPrice() ? formatMoney(holding.getValue()) : "-";
 
-            System.out.println(index + " "
-                    + "TYPE: "
-                    + holding.getAssetType().name()
-                    + " TICKER: "
-                    + holding.getTicker()
-                    + " QTY: "
-                    + formatNumber(holding.getQuantity())
-                    + " PRICE: "
-                    + priceText
-                    + " VALUE: "
-                    + valueText);
+            System.out.println(String.format("%-3d %-5s %-6s %8s %8s %10s %10s",
+                    index,
+                    holding.getAssetType().name(),
+                    toMaxTickerWidth(holding.getTicker()),
+                    formatNumber(holding.getQuantity()),
+                    formatMoney(holding.getAverageBuyPrice()),
+                    priceText,
+                    valueText));
 
             if (holding.hasPrice()) {
                 filteredValueTotal += holding.getValue();
@@ -249,6 +251,7 @@ public class Ui {
         System.out.println("Total holdings: " + (index - 1));
         double totalValue = (filterType == null) ? portfolio.getPricedTotalValue() : filteredValueTotal;
         System.out.println("Total value: " + formatMoney(totalValue));
+        System.out.println("Note: VALUE = QTY x MKT_PRICE. AVG_BUY is cost basis.");
     }
 
     /**
@@ -262,15 +265,20 @@ public class Ui {
         System.out.println("Current total value: " + formatMoney(portfolio.getCurrentTotalValue()));
         System.out.println("Realized P&L: " + formatSignedMoney(portfolio.getTotalRealizedPnl()));
         System.out.println("Unrealised P&L by holding:");
+        System.out.println(String.format("%-6s %-5s %8s %8s %8s %10s",
+            "TICKR", "TYPE", "QTY", "AVG", "LAST", "U_PNL"));
+        System.out.println("-------------------------------------------------------");
 
         List<Holding> holdings = portfolio.getHoldings();
         for (Holding holding : holdings) {
             String lastPriceText = holding.hasPrice() ? formatMoney(holding.getLastPrice()) : "-";
-            System.out.println(holding.getTicker()
-                    + ": Quantity " + formatNumber(holding.getQuantity())
-                    + ", Avg. Price = " + formatMoney(holding.getAverageBuyPrice())
-                    + ", Last Price = " + lastPriceText
-                    + ", Unrealised P&L = " + formatSignedMoney(holding.getUnrealizedPnl()));
+            System.out.println(String.format("%-6s %-5s %8s %8s %8s %10s",
+                toMaxTickerWidth(holding.getTicker()),
+                holding.getAssetType().name(),
+                formatNumber(holding.getQuantity()),
+                formatMoney(holding.getAverageBuyPrice()),
+                lastPriceText,
+                formatSignedMoney(holding.getUnrealizedPnl())));
         }
 
         System.out.println("Total unrealised P&L: " + formatSignedMoney(portfolio.getTotalUnrealizedPnl()));
