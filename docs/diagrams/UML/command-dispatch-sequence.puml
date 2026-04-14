@@ -1,25 +1,30 @@
 @startuml
 title Command Dispatch Main Flow
 
+autoactivate on
 actor User
-participant Ui
-participant CG2StocksTracker
-participant Parser
-participant ParsedCommand
-participant Model
-participant Storage
+participant ":Ui" as Ui
+participant ":CG2StocksTracker" as CG2StocksTracker
+participant ":Parser" as Parser
+participant ":ParsedCommand" as ParsedCommand
+participant ":PortfolioBook" as PortfolioBook
+participant ":Watchlist" as Watchlist
+participant ":Storage" as Storage
 
 User -> Ui : enter command text
-Ui -> CG2StocksTracker : readCommand()
+CG2StocksTracker -> Ui : readCommand()
+Ui --> CG2StocksTracker : command text
 CG2StocksTracker -> Parser : parse(input)
 Parser --> CG2StocksTracker : ParsedCommand
 CG2StocksTracker -> ParsedCommand : type()
 
 alt state-changing command
-  CG2StocksTracker -> Model : execute mutation
+  CG2StocksTracker -> PortfolioBook : mutate portfolios/holdings
+  CG2StocksTracker -> Watchlist : mutate watchlist entries
   CG2StocksTracker -> Storage : save(...)
 else read-only command
-  CG2StocksTracker -> Model : execute query
+  CG2StocksTracker -> PortfolioBook : query portfolio data
+  CG2StocksTracker -> Watchlist : query watchlist data
 end
 
 CG2StocksTracker -> Ui : show output

@@ -327,8 +327,21 @@ public class Parser {
         }
     }
 
-    private String normaliseTicker(String rawTicker) {
-        return rawTicker.toUpperCase();
+    private String normaliseTicker(String rawTicker) throws AppException {
+        String ticker = rawTicker.toUpperCase();
+        if (ticker.length() > 10) {
+            throw new AppException("Ticker must not exceed 10 characters.");
+        }
+        return ticker;
+    }
+  
+    private void validatePortfolioName(String name) throws AppException {
+        if (name == null || name.isBlank()) {
+            throw new AppException("Portfolio name must not be blank");
+        }
+        if (name.startsWith("/")) {
+            throw new AppException("Portfolio name cannot start with '/'");
+        }
     }
 
     private String joinTail(List<String> tokens, int startIndex) {

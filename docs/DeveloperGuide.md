@@ -231,6 +231,7 @@ Adds units to an existing holding or creates a new holding in the active portfol
 ### Error handling and validation
 
 - Missing required options -> parser error.
+- Ticker exceeds 10 characters -> parser error.
 - Invalid type/qty/price/fees -> parser or model error.
 - No active portfolio -> execution error.
 
@@ -282,6 +283,7 @@ Sells part or all of a holding and records realized P&L.
 - Holding not found.
 - Invalid quantity to remove.
 - Price missing when no saved last price exists.
+- Ticker must not exceed 10 characters.
 
 ### Alternatives considered
 
@@ -333,6 +335,7 @@ Variants:
 ### Error handling and validation
 
 - Price must be > 0.
+- Ticker must not exceed 10 characters.
 - Unknown target holding/ticker returns explicit error.
 
 ### Alternatives considered
@@ -352,7 +355,7 @@ Variants:
 
 ### High-level design
 
-Maintains watchlist entries and supports buying them into a portfolio.
+Maintains watchlist entries and supports buying a specified quantity into a portfolio.
 
 Variants:
 
@@ -365,7 +368,7 @@ Variants:
 
 - Parsing: `Parser.parseWatch(...)` and action-specific parsers.
 - Execution: `CG2StocksTracker.handleWatch(...)` routes by action.
-- Buy action: `Watchlist.buyItem(...)` validates price and portfolio, buys the requested quantity, and removes the watch item.
+- Buy action: `Watchlist.buyItem(...)` validates price and portfolio, buys the requested quantity, removes watch item.
 
 ### Class responsibilities
 
@@ -389,18 +392,23 @@ Variants:
 - Remove/buy target not found.
 - Buy without watch price.
 - Buy target portfolio not found.
+- Ticker must not exceed 10 characters.
 
 ### Alternatives considered
 
-- Make users re-enter watchlist items with `/add` instead of supporting `/watch buy`.
-- Rejected: it adds repeated input and weakens the point of the watchlist flow.
+- Keep `/watch buy` fixed to one unit.
+- Rejected: explicit quantity is more flexible and already supported by parser/model.
 
 ### Current limitations
 
+- Watch-buy does not support per-trade fees.
 - `/watch buy` does not support fee fields.
 
 ### Possible future improvements
 
+- Add optional fee fields to watch-buy flow.
+- Make users re-enter watchlist items with `/add` instead of supporting `/watch buy`.
+- Rejected: it adds repeated input and weakens the point of the watchlist flow.
 - Add optional fee fields to the watch-buy flow.
 
 ## `/setmany` - Bulk CSV Price Update
@@ -532,9 +540,11 @@ Variants within command:
 ### Error handling and validation
 
 - Duplicate options rejected.
+- Missing values for `--type` and `--top` are rejected.
 - Unknown options rejected.
 - `--type` value must map to `AssetType`.
 - `--top` must be positive integer.
+- `--top` must not exceed 10,000.
 
 ### Alternatives considered
 
@@ -689,13 +699,22 @@ Watchlist records in `data/CG2StocksTracker.txt.watchlist`:
 - Usability: when a command is rejected, the error message must identify the invalid command or option and show the expected format or constraint.
 - Performance: on a typical personal dataset of up to 10 portfolios and 200 total holdings, each command should finish and print its response within 1 second on a standard developer laptop.
 
-## Glossary (v2.0 data model)
+## Glossary
 
-- Portfolio: a named container of holdings (for example, `longterm`, `trading`).
-- Holding: one owned asset identified by `(assetType, ticker)`.
-- Price: latest known market price per unit for a ticker, stored when user updates it.
-- Realized P&L: gain/loss from completed sells.
-- Unrealized P&L: gain/loss on open positions based on last stored price.
+| Term | Meaning |
+|---|---|
+| Portfolio | A named container of holdings (for example, `longterm`, `trading`). |
+| Holding | One owned asset identified by `(assetType, ticker)`. |
+| Ticker | Asset symbol used to identify holdings; normalized to uppercase and limited to 10 characters. |
+| Asset type | Category of holding: `stock`, `etf`, or `bond`. |
+| Quantity (QTY) | Number of units currently owned for a holding. |
+| Average buy price (AVG_BUY) | Weighted average cost per unit, including buy-side fees. |
+| Market price (MKT_PRICE) | Latest stored per-unit price set via `/set` or `/setmany`. |
+| Current value | `quantity × market price` for a holding. |
+| Realized P&L | Profit or loss from completed sells. |
+| Unrealized P&L | Profit or loss on open holdings based on latest stored price. |
+| Watchlist | List of assets you may buy later, optionally with target price. |
+| Active portfolio | The currently selected portfolio used by most commands. |
 
 ## Instructions for Manual Testing (Smoke Checklist)
 
@@ -728,14 +747,14 @@ Expected checks:
 
 1. `/watch add --type etf --ticker QQQ --price 450`
 2. `/watch list`
-3. `/watch buy --type etf --ticker QQQ --qty 1 --portfolio trading`
+3. `/watch buy --type etf --ticker QQQ --qty 2 --portfolio trading`
 4. `/use trading`
 5. `/list`
 
 Expected checks:
 
 - watch item appears then is removed after buy
-- the requested quantity is bought into `trading`
+- specified quantity is bought into `trading`
 
 ### Setmany flow
 

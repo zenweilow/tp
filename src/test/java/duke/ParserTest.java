@@ -62,6 +62,12 @@ public class ParserTest {
     }
 
     @Test
+    void parseAdd_withTickerExceedingMaxLength_throws() {
+        assertThrows(AppException.class, () ->
+                parser.parse("/add --type STOCK --ticker VERYLONGTICKER --qty 1 --price 300"));
+    }
+
+    @Test
     void parseAdd_withInvalidQuantity_throws() {
         assertThrows(AppException.class, () ->
                 parser.parse("/add --type STOCK --ticker VOO --qty abc --price 300"));

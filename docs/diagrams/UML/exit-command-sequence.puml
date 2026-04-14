@@ -1,13 +1,15 @@
 @startuml
 title /exit Sequence
 
+autoactivate on
 actor User
-participant Ui
-participant CG2StocksTracker
-participant Parser
+participant ":Ui" as Ui
+participant ":CG2StocksTracker" as CG2StocksTracker
+participant ":Parser" as Parser
 
 User -> Ui : /exit
-Ui -> CG2StocksTracker : command text
+CG2StocksTracker -> Ui : readCommand()
+Ui --> CG2StocksTracker : command text
 CG2StocksTracker -> Parser : parse(...)
 Parser --> CG2StocksTracker : EXIT
 CG2StocksTracker -> Ui : showGoodbye()

@@ -1,17 +1,19 @@
 @startuml
 title Command Execution Sequence (Parser + ParsedCommand + Linked Components)
 
+autoactivate on
 actor User
-participant Ui
-participant CG2StocksTracker as App
-participant Parser
-participant ParsedCommand as Cmd
-participant PortfolioBook as Book
-participant Portfolio
-participant Storage
+participant ":Ui" as Ui
+participant ":CG2StocksTracker" as App
+participant ":Parser" as Parser
+participant ":ParsedCommand" as Cmd
+participant ":PortfolioBook" as Book
+participant ":Portfolio" as Portfolio
+participant ":Storage" as Storage
 
 User -> Ui: types command
-Ui -> App: readCommand()
+App -> Ui: readCommand()
+Ui --> App: command text
 
 App -> Parser: parse(input)
 alt invalid syntax/options
@@ -20,11 +22,20 @@ alt invalid syntax/options
 else valid command
     Parser --> App: Cmd
 
-    alt LIST / VALUE
+    alt LIST
+        alt has active portfolio
+            App -> Book: getActivePortfolio()
+            Book --> App: Portfolio
+            App -> Portfolio: read holdings/query by filter
+            App -> Ui: showHoldings(...)
+        else no active portfolio
+            App -> Book: getPortfolios()
+            App -> Ui: showPortfolios(...)
+        end
+    else VALUE
         App -> Book: getActivePortfolio()
         Book --> App: Portfolio
-        App -> Portfolio: read-only query
-        App -> Ui: show output
+        App -> Ui: showPortfolioValue(portfolio)
     else ADD
         App -> Book: getActivePortfolio()
         Book --> App: Portfolio
