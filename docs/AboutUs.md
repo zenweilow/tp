@@ -1,13 +1,11 @@
 # About us
 
 
-Display |     Name      |             Github Profile             | Portfolio 
-
---------|:-------------:|:--------------------------------------:|:---------:
-
-![](https://via.placeholder.com/100.png?text=Photo) | Rishabh Shenoy | [Github](https://github.com/RishabhShenoy03) | [Portfolio](docs/teams/rishabhshenoy03.md)
-![](https://via.placeholder.com/100.png?text=Photo) | Joel Ku | [Github](https://github.com/joeLku1/ip) | [Portfolio](docs/teams/joelku1.md)
-![](https://via.placeholder.com/100.png?text=Photo) | Joel Ong | [Github](https://github.com/jwelo) | [Portfolio](docs/team/jwelo.md)
-![](https://via.placeholder.com/100.png?text=Photo) | zen wei  | [Github](https://github.com/zenweilow) | [Portfolio](docs/team/zenweilowmd)
-![](https://via.placeholder.com/100.png?text=Photo) | Jerry Andikko | [Github](https://github.com/Elegazia/) | [Portfolio](docs/team/elegazia.md)
+| Display | Name | GitHub Profile | Portfolio |
+| --- | :---: | :---: | :---: |
+| ![](team/photo/rishabh.jpg) | Rishabh Shenoy | [Github](https://github.com/RishabhShenoy03) | [Portfolio](https://ay2526s2-cs2113-w09-4.github.io/tp/team/rishabhshenoy03.html) |
+| ![](team/photo/joelku.jpg) | Joel Ku | [Github](https://github.com/joeLku1/ip) | [Portfolio](https://ay2526s2-cs2113-w09-4.github.io/tp/team/joelku1.html) |
+| ![](team/photo/joelong.jpg) | Joel Ong | [Github](https://github.com/jwelo) | [Portfolio](https://ay2526s2-cs2113-w09-4.github.io/tp/team/jwelo.html) |
+| ![](team/photo/zenwei.jpg) | Low Zen Wei | [Github](https://github.com/zenweilow) | [Portfolio](https://ay2526s2-cs2113-w09-4.github.io/tp/team/zenweilow.html) |
+| ![](team/photo/jerry.jpg) | Jerry Andikko | [Github](https://github.com/Elegazia/) | [Portfolio](https://ay2526s2-cs2113-w09-4.github.io/tp/team/elegazia.html) |
 

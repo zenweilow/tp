@@ -1,6 +1,7 @@
 '@@author RishabhShenoy03
 @startuml
 title Value Command Class View
+hide circles
 
 class Parser {
   + parse(input: String): ParsedCommand
