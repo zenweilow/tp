@@ -3,13 +3,12 @@
 title /set Sequence
 
 actor User
-participant Ui
-participant CG2StocksTracker
-participant Parser
-participant PortfolioBook
-participant Portfolio
-participant Storage
-
+participant ":Ui" as Ui
+participant ":CG2StocksTracker" as CG2StocksTracker
+participant ":Parser" as Parser
+participant ":PortfolioBook" as PortfolioBook
+participant ":Portfolio" as Portfolio
+participant ":Storage" as Storage
 User -> Ui : /set --ticker ... --price ... [--type ...]
 Ui -> CG2StocksTracker : command text
 CG2StocksTracker -> Parser : parse(...)

@@ -1,33 +1,51 @@
 @startuml
 title Create Command Class View
+hide circle
 
 class Parser {
   + parse(input: String): ParsedCommand
 }
 
 class ParsedCommand {
+  - type: CommandType
+  - name: String
+  + type(): CommandType
   + name(): String
 }
 
 class CG2StocksTracker {
-  + run()
+  - parser: Parser
+  - portfolioBook: PortfolioBook
+  - storage: Storage
+  - ui: Ui
+  + handleCreate(command: ParsedCommand)
 }
 
 class PortfolioBook {
-  + createPortfolio(name: String)
+  - portfolios: Map<String, Portfolio>
+  - activePortfolioName: String
+  + createPortfolio(name: String): void
+  + hasActivePortfolio(): boolean
   + getActivePortfolioName(): String
 }
 
+class Portfolio {
+  - name: String
+}
+
 class Storage {
-  + save(portfolioBook: PortfolioBook)
+  - storageFilePath: Path
+  + save(portfolioBook: PortfolioBook): void
 }
 
 class Ui {
-  + showMessage(message: String)
+  + showMessage(message: String): void
 }
 
-Parser ..> ParsedCommand
-CG2StocksTracker ..> PortfolioBook : createPortfolio(name)
-CG2StocksTracker ..> Storage : save()
-CG2StocksTracker ..> Ui : showMessage(...)
+Parser ..> ParsedCommand : constructs
+CG2StocksTracker ..> Parser : parses command text
+CG2StocksTracker ..> PortfolioBook : coordinates portfolio lifecycle
+PortfolioBook o-- "0..*" Portfolio : stores
+CG2StocksTracker ..> Storage : persists state
+CG2StocksTracker ..> Ui : reports outcome
 @enduml

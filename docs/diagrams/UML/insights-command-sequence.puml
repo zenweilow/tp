@@ -2,12 +2,11 @@
 title /insights Sequence
 
 actor User
-participant Ui
-participant CG2StocksTracker
-participant Parser
-participant PortfolioBook
-participant Portfolio
-
+participant ":Ui" as Ui
+participant ":CG2StocksTracker" as CG2StocksTracker
+participant ":Parser" as Parser
+participant ":PortfolioBook" as PortfolioBook
+participant ":Portfolio" as Portfolio
 User -> Ui : /insights [--type] [--top] [--chart]
 Ui -> CG2StocksTracker : command text
 CG2StocksTracker -> Parser : parse(...)

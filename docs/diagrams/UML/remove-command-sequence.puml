@@ -2,15 +2,14 @@
 title /remove Sequence
 
 actor User
-participant Ui
-participant CG2StocksTracker
-participant Parser
-participant ParsedCommand
-participant PortfolioBook
-participant Portfolio
-participant Holding
-participant Storage
-
+participant ":Ui" as Ui
+participant ":CG2StocksTracker" as CG2StocksTracker
+participant ":Parser" as Parser
+participant ":ParsedCommand" as ParsedCommand
+participant ":PortfolioBook" as PortfolioBook
+participant ":Portfolio" as Portfolio
+participant ":Holding" as Holding
+participant ":Storage" as Storage
 User -> Ui : /remove --type ... --ticker ... [--qty] [--price]
 Ui -> CG2StocksTracker : command text
 CG2StocksTracker -> Parser : parse(...)

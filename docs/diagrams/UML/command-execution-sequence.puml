@@ -2,14 +2,13 @@
 title Command Execution Sequence (Parser + ParsedCommand + Linked Components)
 
 actor User
-participant Ui
-participant CG2StocksTracker as App
-participant Parser
-participant ParsedCommand as Cmd
-participant PortfolioBook as Book
-participant Portfolio
-participant Storage
-
+participant ":Ui" as Ui
+participant ":CG2StocksTracker" as App
+participant ":Parser" as Parser
+participant ":ParsedCommand" as Cmd
+participant ":PortfolioBook" as Book
+participant ":Portfolio" as Portfolio
+participant ":Storage" as Storage
 User -> Ui: types command
 Ui -> App: readCommand()
 

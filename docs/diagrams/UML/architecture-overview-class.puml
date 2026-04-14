@@ -1,5 +1,6 @@
 @startuml
 title Architecture Overview
+hide circle
 
 class Ui {
   + readCommand(): String

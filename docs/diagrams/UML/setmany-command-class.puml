@@ -1,34 +1,57 @@
 @startuml
 title SetMany Command Class View
+hide circle
 
 class Parser {
   + parse(input: String): ParsedCommand
 }
 
+class ParsedCommand {
+  - type: CommandType
+  - filePath: Path
+  + filePath(): Path
+}
+
 class CG2StocksTracker {
-  + run()
+  - parser: Parser
+  - portfolioBook: PortfolioBook
+  - storage: Storage
+  - ui: Ui
+  + handleSetMany(command: ParsedCommand)
 }
 
 class Storage {
+  - storageFilePath: Path
   + loadPriceUpdates(csvPath: Path, portfolio: Portfolio): BulkUpdateResult
-  + save(portfolioBook: PortfolioBook)
+  + save(portfolioBook: PortfolioBook): void
+}
+
+class BulkUpdateResult {
+  - successCount: int
+  - failedCount: int
+  - failures: List<String>
 }
 
 class PortfolioBook {
+  - activePortfolioName: String
   + getActivePortfolio(): Portfolio
 }
 
 class Portfolio {
+  - holdings: Map<String, Holding>
   + setPriceForTicker(ticker: String, price: double): int
 }
 
 class Ui {
-  + showBulkUpdateResult(result: Storage.BulkUpdateResult)
+  + showBulkUpdateResult(result: Storage.BulkUpdateResult): void
 }
 
-CG2StocksTracker ..> PortfolioBook : getActivePortfolio()
-CG2StocksTracker ..> Storage : loadPriceUpdates(file, portfolio)
-Storage ..> Portfolio : setPriceForTicker(...)
-CG2StocksTracker ..> Storage : save(...)
-CG2StocksTracker ..> Ui : showBulkUpdateResult(...)
+Parser ..> ParsedCommand : constructs
+CG2StocksTracker ..> Parser : parses command text
+CG2StocksTracker ..> PortfolioBook : reads active portfolio context
+PortfolioBook --> Portfolio : provides active portfolio
+CG2StocksTracker ..> Storage : loads CSV updates and persists state
+Storage ..> Portfolio : applies ticker price updates
+Storage ..> BulkUpdateResult : returns update summary
+CG2StocksTracker ..> Ui : displays bulk update summary
 @enduml

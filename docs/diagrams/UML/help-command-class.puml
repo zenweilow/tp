@@ -1,5 +1,6 @@
 @startuml
 title Help Command Class View
+hide circle
 
 class Parser {
   + parse(input: String): ParsedCommand
