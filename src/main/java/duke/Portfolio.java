@@ -38,6 +38,7 @@ public class Portfolio {
 
         double effectivePurchasePrice = ((purchasePrice * quantity) + fees) / quantity;
         Holding holding = new Holding(assetType, ticker, quantity, effectivePurchasePrice);
+        holding.setLastPrice(purchasePrice);
         holdings.put(key, holding);
         return holding.getQuantity();
     }
