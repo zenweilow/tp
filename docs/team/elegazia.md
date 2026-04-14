@@ -9,138 +9,41 @@ Given below are my contributions to the project.
 
 ---
 
-### New Features: Implemented portfolio tracking and gains calculation
+### Key engineering contributions
 
-* What:
+* Implemented holding-level tracking and P&L computation:
+  quantity, average buy price, and realized/unrealized gains across `/add`, `/remove`, and `/value`.
+* Implemented weighted-average buy-price updates so repeated buys update cost basis correctly
+  instead of overwriting previous position data.
+* Ensured sell-flow logic computes realized gain against average cost and keeps remaining holdings
+  internally consistent after partial disposals.
+* Built and maintained the flag-based parser for `/add`, `/remove`, `/set`, `/list`, and `/value`
+  with validation for required fields (for example `--type`, `--ticker`, `--qty`, `--price`) and normalization into `ParsedCommand`.
+* Standardized parser error handling so malformed input fails early with actionable user-facing messages
+  before command execution reaches model logic.
+* Added transaction-fee support in `/add` and `/remove` via optional `--brokerage`, `--fx`, and `--platform` inputs.
+* Integrated fee aggregation directly into transaction calculations so reported performance reflects
+  realistic net outcomes rather than gross-only values.
+* Refactored parser and related tests as command signatures evolved to preserve behavior across parser, model, and UI layers.
 
-    * Implemented tracking of holdings with quantity, average buy price, and price updates.
-    * Supports correct computation of realized and unrealized gains across `/add`, `/remove`, and `/value`.
-* Why:
+### Design and maintainability impact
 
-    * Core functionality of a portfolio tracker requires accurate tracking of investments and returns.
-    * Ensures users can correctly evaluate performance of their holdings.
-* How:
-
-    * Extended `Holding` to maintain `averageBuyPrice` and compute P&L.
-    * Implemented weighted average updates on buy and correct realized P&L on sell.
-    * Aggregated gains at portfolio level and exposed via `/value`.
-
----
-
-### New Features: Designed and implemented command parsing system
-
-* What:
-
-    * Implemented parsing for commands including `/add`, `/remove`, `/set`, `/list`, and `/value`.
-    * Enforced structured command formats using flags such as `--type`, `--ticker`, `--qty`, and `--price`.
-* Why:
-
-    * Prevents invalid command states from propagating to execution logic.
-    * Ensures consistent and predictable CLI behaviour.
-* How:
-
-    * Centralised parsing logic in `Parser`.
-    * Implemented option parsing, required field validation, and input normalization.
-    * Converted user input into `ParsedCommand` objects for execution.
+* Reduced parser-execution coupling by consistently routing validated user input through `ParsedCommand`.
+* Improved long-term maintainability by keeping command contracts aligned across parser, execution, tests, and docs.
+* Lowered regression risk during feature expansion by updating tests in parallel with signature or behavior changes.
 
 ---
 
-### Enhancement: Implemented support for transaction fees
+### Bug fixes and code quality
 
-* What:
-
-    * Extended `/add` and `/remove` to support optional fee inputs:
-
-        * `--brokerage`
-        * `--fx`
-        * `--platform`
-* Why:
-
-    * Reflects real-world investing scenarios where fees affect returns.
-    * Improves accuracy of portfolio performance calculations.
-* How:
-
-    * Parsed optional fee fields and aggregated them into a single value.
-    * Integrated fee handling into execution logic without breaking existing behaviour.
-
----
-
-### Enhancement: Refactored parser and tests after command-signature changes
-
-* What:
-
-    * Refactored parser-related logic and updated tests when command signatures evolved.
-* Why:
-
-    * Reduced integration breakages and preserved behaviour consistency across parser, model, and UI layers.
-* How:
-
-    * Updated parser test cases to cover both valid and invalid flows after each change.
-    * Maintained regression safety while introducing new behaviour.
-
----
-
-### Bug Fix: Rejected blank portfolio names in `/create` and `/use`
-
-* What:
-
-    * Fixed `/create " "` and `/use " "` accepting blank or whitespace-only portfolio names.
-* Why:
-
-    * Invalid portfolio names could propagate into the model and storage layers, causing undefined behaviour.
-* How:
-
-    * Added a `validatePortfolioName()` helper in `Parser` that rejects null, blank, and `/`-prefixed names.
-    * Added regression tests (`parseCreate_withBlankQuotedName_throws`, `parseUse_withBlankQuotedName_throws`).
-
----
-
-### Enhancement: Added assertions across core classes
-
-* What:
-
-    * Added Java `assert` statements for preconditions, postconditions, and invariants in `Parser`, `Portfolio`, `PortfolioBook`, and `Storage`.
-* Why:
-
-    * Catches programmer errors early and documents the assumptions each method relies on.
-* How:
-
-    * `Parser`: asserts on token validity and result correctness in `parseCreate`/`parseUse`/`tokenise`.
-    * `Portfolio`: asserts on input validity in `addHolding` and null-safety in `getHoldings`.
-    * `PortfolioBook`: asserts on name validity in `createPortfolio`/`usePortfolio` and null-safety in `getPortfolios`.
-    * `Storage`: asserts on file existence after init/write, non-null data during load/save, and loop invariants.
-
----
-
-### Enhancement: Added logging and suppressed console log output
-
-* What:
-
-    * Added `java.util.logging` calls in `CG2StocksTracker` (command reception, failures, persistence) and `Storage` (load, save, quarantine, watchlist operations).
-    * Configured `LogManager.reset()` in `main()` to suppress default console handler output so users do not see raw log lines.
-* Why:
-
-    * Provides a diagnostic trail for debugging without polluting the user-facing CLI output.
-* How:
-
-    * Used `LOGGER.fine()` for routine events and `LOGGER.log(Level.WARNING/SEVERE, ...)` for errors.
-    * Reset the root logger's handlers at startup so log output does not print to stderr.
-
----
-
-### Enhancement: Refactored UI and controller for readability
-
-* What:
-
-    * Extracted a `printFormatted()` helper in `Ui` to eliminate duplicated `System.out.printf` + `println` patterns.
-    * Applied SLAP (Single Level of Abstraction Principle) refactoring in `CG2StocksTracker`, `Storage`, and `Ui`.
-* Why:
-
-    * Reduces code duplication and improves readability of long methods.
-* How:
-
-    * Replaced repeated `System.out.printf(...); System.out.println();` calls with `printFormatted(...)`.
-    * Broke down multi-step methods into smaller private helpers at a consistent abstraction level.
+* Fixed acceptance of blank names in `/create` and `/use` by introducing `validatePortfolioName()`
+  (rejects null, blank, and `/`-prefixed names), with regression tests for both commands.
+* Added assertions across `Parser`, `Portfolio`, `PortfolioBook`, and `Storage`
+  to enforce preconditions, postconditions, and invariants.
+* Introduced structured logging in `CG2StocksTracker` and `Storage` for diagnostics,
+  while suppressing default console log spam with `LogManager.reset()`.
+* Improved readability through SLAP-driven refactoring and a shared `Ui.printFormatted()` helper
+  to remove repetitive print patterns.
 
 ---
 
@@ -152,18 +55,12 @@ Given below are my contributions to the project.
 
 ### Documentation
 
-* User Guide:
-
-    * Updated `/add`, `/remove`, `/set`, `/list`, and `/value` command formats to reflect final flag-based syntax (e.g. `--type`, `--ticker`, `--qty`, `--price`).
-    * Revised command examples to align with actual parser behaviour, including required and optional arguments.
-    * Clarified usage for filtered listing (`--stock`, `--etf`, `--bond`) and portfolio summaries (`--portfolios`).
-
-* Developer Guide:
-
-    * Updated DG sections for command flow to reflect the actual parsing → execution pipeline (`Parser` → `ParsedCommand` → `CG2StocksTracker.execute`).
-    * Refined descriptions of parser validation logic, including option parsing and error handling paths.
-    * Added/updated UML sequence diagrams for `/set`, `/value`, and `/list` to match implemented behaviour.
-    * Ensured DG explanations are consistent with current command contracts and no longer reflect outdated command signatures.
+* Updated the User Guide command formats and examples for final flag-based syntax
+    (`/add`, `/remove`, `/set`, `/list`, `/value`) including filtered listing and portfolio-summary options.
+* Updated the Developer Guide to match the current parser-to-execution flow
+    (`Parser` -> `ParsedCommand` -> `CG2StocksTracker.execute`) and refreshed UML sequence diagrams for `/set`, `/value`, and `/list`.
+* Reviewed wording and examples to remove outdated command signatures so documentation remains consistent
+  with the shipped product behavior.
 
 ---
 
@@ -171,14 +68,14 @@ Given below are my contributions to the project.
 
 * Added regression tests for blank-name validation in `ParserTest` (`parseCreate_withBlankQuotedName_throws`, `parseUse_withBlankQuotedName_throws`).
 * Updated `UiTest` assertions to match spelling changes (e.g. "Unrealised").
-* Regenerated and synchronised `text-ui-test/EXPECTED.TXT` with actual program output after spelling, error-message, and structural changes.
+* Regenerated `text-ui-test/EXPECTED.TXT` to stay in sync with final output and messaging changes.
 
 ---
 
 ### Contributions to team-based tasks
 
 * Helped prepare and release `v1.0`.
-* Supported team integration during refactoring-heavy phases.*
+* Supported team integration during refactoring-heavy phases.
 * Contributed to task coordination and keeping the team aligned with deadlines.
 
 ---
@@ -187,6 +84,8 @@ Given below are my contributions to the project.
 
 * Reviewed teammates' pull requests and provided feedback on command behaviour and parser consistency.
 * Helped troubleshoot parsing issues and integration bugs.
+* Flagged edge cases during reviews (invalid options, missing required flags, blank inputs)
+  to improve robustness before merge.
 
 ---
 
