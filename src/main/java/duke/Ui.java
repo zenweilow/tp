@@ -493,7 +493,7 @@ public class Ui {
         if (ticker == null) {
             return "";
         }
-        return ticker.length() <= 5 ? ticker : ticker.substring(0, 5);
+        return ticker.length() <= 10 ? ticker : ticker.substring(0, 10);
     }
 
     private void printInsightsChart(List<Holding> holdings) {

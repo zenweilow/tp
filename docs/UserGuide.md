@@ -50,6 +50,7 @@ Notes about command syntax:
 - Option keys are case-insensitive. Example: `--TYPE` is treated as `--type`.
 - Asset type values are case-insensitive: `stock`, `etf`, `bond`.
 - Tickers are normalized to uppercase in storage and display.
+- Tickers must not exceed 10 characters in length.
 - For options, each key must be followed by one value. Example: `--qty 10`.
 - Duplicate options in one command are rejected.
 - Unknown options are rejected.
@@ -370,6 +371,23 @@ Common reasons commands fail:
 - invalid CSV file path, header, or row format for `/setmany`
 
 When a command fails, the app prints an error and waits for the next command.
+
+## Glossary
+
+| Term | Meaning |
+|---|---|
+| Portfolio | A named container of holdings (for example, `longterm`, `trading`). |
+| Holding | One owned asset identified by `(asset type, ticker)`. |
+| Ticker | Asset symbol used to identify holdings; normalized to uppercase and limited to 10 characters. |
+| Asset type | Category of holding: `stock`, `etf`, or `bond`. |
+| Quantity (QTY) | Number of units currently owned for a holding. |
+| Average buy price (AVG_BUY) | Weighted average cost per unit, including buy-side fees. |
+| Market price (MKT_PRICE) | Latest stored per-unit price set via `/set` or `/setmany`. |
+| Current value | `quantity × market price` for a holding. |
+| Realized P&L | Profit or loss from completed sells. |
+| Unrealized P&L | Profit or loss on open holdings based on latest stored price. |
+| Watchlist | List of assets you may buy later, optionally with target price. |
+| Active portfolio | The currently selected portfolio used by most commands. |
 
 ## FAQ
 

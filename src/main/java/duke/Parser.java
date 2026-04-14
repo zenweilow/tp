@@ -309,8 +309,12 @@ public class Parser {
         }
     }
 
-    private String normaliseTicker(String rawTicker) {
-        return rawTicker.toUpperCase();
+    private String normaliseTicker(String rawTicker) throws AppException {
+        String ticker = rawTicker.toUpperCase();
+        if (ticker.length() > 10) {
+            throw new AppException("Ticker must not exceed 10 characters.");
+        }
+        return ticker;
     }
 
     private String joinTail(List<String> tokens, int startIndex) {
